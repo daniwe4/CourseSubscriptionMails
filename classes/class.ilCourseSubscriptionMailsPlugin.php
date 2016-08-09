@@ -3,8 +3,8 @@
 include_once("./Services/EventHandling/classes/class.ilEventHookPlugin.php");
 
 /**
- *  Listen on course subscriptors
- */
+*  Listen on Modules/Course events
+*/
 class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	
 	/**
@@ -17,9 +17,13 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 		return "CourseSubscriptionMails";
 	}
 
+	/**
+	* Handle Modules/Course events
+	*/
 	final function handleEvent($a_component, $a_event, $a_parameter) {
 		global $ilLog;
 
-		$ilLog->write("<-------------- Neuer Eintrag --------------->");
+		$ilLog->write("<---------- Neuer Eintrag ------------>");
+
 	}
 }
