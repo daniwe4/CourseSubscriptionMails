@@ -31,12 +31,14 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	 * @return 	null
 	 */
 	final function handleEvent($a_component, $a_event, $a_parameter) {
+		if ($a_component == "Modules/Course") {
+			
+			$mail_templating = new Mails\classes\ilNaiveMailTemplating();
+			$mail_sender = new Mails\classes\ilMailSender();
+			
+			$processor = new Mails\business\SendCorrectMailToUser($mail_templating, $mail_sender);
 
-		$mail_templating = new Mails\classes\ilNaiveMailTemplating();
-		$mail_sender = new Mails\classes\ilMailSender();
-
-		$processor = new Mails\business\SendCorrectMailToUser($mail_templating, $mail_sender);
-
-		$processor->sendCorrectMail($a_event, (int)$a_parameter["usr_id"], (int)$a_parameter["crs_id"]);
+			$processor->sendCorrectMail($a_event, (int)$a_parameter["usr_id"], (int)$a_parameter["crs_id"]);
+		}
 	}
 }
