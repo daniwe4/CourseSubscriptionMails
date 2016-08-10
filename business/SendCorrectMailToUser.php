@@ -33,7 +33,7 @@ class SendCorrectMailToUser {
 		global $ilLog;
 
 		$massege = $this->mail_template->getMailFor($event_name, $user_id, $crs_id);
-		$ilLog->write($messege);
+		$ilLog->write($massege);
 		$this->mail_sender->sendMail($user_id, $subject, $massege);
 	}
 }
