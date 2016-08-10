@@ -1,6 +1,11 @@
 <?php
 
 include_once("./Services/EventHandling/classes/class.ilEventHookPlugin.php");
+require_once(__DIR__ . "/ilNaiveMailTemplating.php");
+require_once(__DIR__ . "/ilMailSender.php");
+require_once(__DIR__ . "/../business/SendCorrectMailToUser.php");
+
+use CaT\Plugins\CourseSubscriptionMails as Mails;
 /**
 *  Listen on Modules/Course events
 */
@@ -25,5 +30,11 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 		$ilLog->write("a_component: " . $a_component . "----- a_event: " . print_r($a_event, true) . "------- a_parameter: " . print_r($a_parameter, true));
 
 
+		$mail_templating = new Mails\classes\ilNaiveMailTemplating();
+		$mail_sender = new Mails\classes\ilMailSender();
+
+		$processor = new Mails\business\SendCorrectMailToUser($mail_templating, $mail_sender);
+
+		$processor->handle($a_event, (int)$a_parameter["usr_id"], (int)$a_parameter["crs_id"]);
 	}
 }
