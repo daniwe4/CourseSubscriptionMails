@@ -9,7 +9,7 @@ use CaT\Plugins\CourseSubscriptionMails;
 interface MailSender {
 	
 	/**
-	 * Sents a mail to User 
+	 * Sends a mail to User 
 	 * 
 	 * @param 	int 		$userID
 	 * @param 	string 		$subject

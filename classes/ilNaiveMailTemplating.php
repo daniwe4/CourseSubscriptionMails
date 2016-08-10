@@ -13,9 +13,18 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @inheritdoc
 	 */
 	public function getMailFor($event_name, $user_id, $crs_id) {
+		assert(is_string($event_name));
+		assert(is_int($user_id));
+		assert(is_int($crs_id));
+
+		$this->event_name = $event_name;
+		$this->user_id = $user_id;
+		$this->crs_id = $crs_id;
 
 		$user = new \ilObjUser($user_id);
 		$crs = new \ilObjCourse($crs_id);
+
+		
 		
 		switch ($event_name) {
 			case 'addSubscriber':
@@ -39,10 +48,10 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 				break;
 				
 			default:
-				// throw new \InvalidArgumentException("Event not known", 1);
-				// break;
+				throw new \InvalidArgumentException("Event not known", 1);
+				break;
 
-		
 		}
+		
 	}
 }

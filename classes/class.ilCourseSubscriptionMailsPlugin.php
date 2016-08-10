@@ -22,19 +22,21 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	}
 
 	/**
-	* Handle Modules/Course events
-	*/
+	 * Handle Modules/Course events
+	 *
+	 * @param 	string 	$a_component
+	 * @param 	string 	$a_event
+	 * @param 	array 	$a_parameter
+	 *
+	 * @return 	null
+	 */
 	final function handleEvent($a_component, $a_event, $a_parameter) {
-		global $ilLog;
-
-		$ilLog->write("a_component: " . $a_component . "----- a_event: " . print_r($a_event, true) . "------- a_parameter: " . print_r($a_parameter, true));
-
 
 		$mail_templating = new Mails\classes\ilNaiveMailTemplating();
 		$mail_sender = new Mails\classes\ilMailSender();
 
 		$processor = new Mails\business\SendCorrectMailToUser($mail_templating, $mail_sender);
 
-		$processor->handle($a_event, (int)$a_parameter["usr_id"], (int)$a_parameter["crs_id"]);
+		$processor->sendCorrectMail($a_event, (int)$a_parameter["usr_id"], (int)$a_parameter["crs_id"]);
 	}
 }
