@@ -32,7 +32,7 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	 */
 	final function handleEvent($a_component, $a_event, $a_parameter) {
 		global $ilLog;
- 
+
  		$ilLog->write("a_component: " . $a_component . "----- a_event: " . print_r($a_event, true) . "------- a_parameter: " . print_r($a_parameter, true));
 
 		if ($a_component == "Modules/Course") {
@@ -42,7 +42,7 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 
 			$processor = new Mails\business\SendCorrectMailToUser($mail_templating, $mail_sender);
 
-			$processor->sendCorrectMail($a_event, (int)$a_parameter["usr_id"], (int)$a_parameter["crs_id"]);
+			$processor->sendCorrectMail($a_event, (int)$a_parameter["usr_id"], (int)$a_parameter["obj_id"]);
 		}
 	}
 }

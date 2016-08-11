@@ -26,14 +26,15 @@ class SendCorrectMailToUser {
 	 *
 	 * @return null
 	 */
-	public function sendCorrectMail($event_name, $user_id, $crs_id) {
+	public function sendCorrectMail($event_name, $usr_id, $crs_id) {
 		assert(is_string($event_name));
-		assert(is_int($user_id));
-		assert(is_int($crs_id));
+		assert(is_int($usr_id) && $usr_id >= 0);
+		assert(is_int($crs_id) && $crs_id > 0);
+
 		global $ilLog;
 
-		$massege = $this->mail_template->getMailFor($event_name, $user_id, $crs_id);
+		$massege = $this->mail_template->getMailFor($event_name, $usr_id, $crs_id);
 		$ilLog->write($massege);
-		$this->mail_sender->sendMail($user_id, $subject, $massege);
+		$this->mail_sender->sendMail($usr_id, $subject, $massege);
 	}
 }

@@ -13,7 +13,7 @@ interface MailTemplate {
 	 * @param 	int 	$user_id
 	 * @param 	int 	$crs_id
 	 *
-	 * @throws \InvalidArgumentException on unknown event, user or crs.
+	 * @throws 	\InvalidArgumentException on unknown event, user or crs.
 	 * @return	string
 	 */
 	public function getMailFor($event_name, $user_id, $crs_id);
