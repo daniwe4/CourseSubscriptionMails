@@ -1,5 +1,5 @@
 <?php
-
+require_once(__DIR__ . "/../interfaces/MailSender.php");
 /**
  * Mock for MailSender
  */
@@ -7,6 +7,7 @@ class mockMailSender implements MailSender {
 	public $usr_id = null;
 	public $subject = null;
 	public $message = null;
+	public $response = array();
 
 	public function __construct($usr_id, $subject, $message) {
 		$this->usr_id = $usr_id;
@@ -26,11 +27,15 @@ class mockMailSender implements MailSender {
 		return $this->message;
 	}
 
+	public function response() {
+		return implode(' ', $response);
+	}
+
 	/**
 	 * @inerhitdoc
 	 */
 	public function sendMail($usr_id, $subject, $message) {
-		response = array($usr_id, $subject, $message);
-		return response;
+		$this->$response = [$usr_id, $subject, $message];
+		return "return aus mockMailSender->sendMail()";
 	}
 }

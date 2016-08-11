@@ -12,7 +12,7 @@ class SendCorrectMailToUser {
 	protected $mail_template;
 	protected $mail_sender;
 
-	public function __construct(Mails\interfaces\MailTemplate $mail_template, Mails\interfaces \MailSender $mail_sender) {
+	public function __construct(Mails\interfaces\MailTemplate $mail_template, Mails\interfaces\MailSender $mail_sender) {
 		$this->mail_template = $mail_template;
 		$this->mail_sender = $mail_sender;
 	}

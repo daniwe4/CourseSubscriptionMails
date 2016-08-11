@@ -4,6 +4,7 @@ namespace CaT\Plugins\CourseSubscriptionMails\classes;
 
 require_once(__DIR__ . "/../interfaces/MailTemplate.php");
 require_once(__DIR__ . "/../../../../../../../../Modules/Course/classes/class.ilObjCourse.php");
+require_once(__DIR__ . "/../business/MailSettings.php");
 
 use CaT\Plugins\CourseSubscriptionMails as Mails;
 
@@ -12,6 +13,7 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	protected $usr_id;
 	protected $crs_id;
 
+	
 	/**
 	 * @inheritdoc
 	 */
@@ -28,27 +30,33 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		$crs = new \ilObjCourse($this->crs_id, false);
 		
 		
-		switch ($this->event_name) {
-			case 'addSubscriber':
-				return "Hallo " .$usr->getFirstName() ." Sie haben sich erfolgreich in den Kurs \"" .$crs->getTitle() ."\" eingeschrieben.";
-							
-			case 'addToWaitingList':
-				return "Hallo " .$usr->getFirstName() ." Sie hwurden erfolgreich der Warteliste für den Kurs \"" .$crs->getTitle() ."\" hinzugefügt.";
-				
-			case 'deleteParticipant':
-				return "Hallo " .$usr->getFirstName() ." Sie wurden erfolgreich aus dem Kurs \"" .$crs->getTitle() ."\" entfernt.";
-				
-			case 'deleteFromWaitingList':
-				return "Hallo " .$usr->getFirstName() ." Sie wurden aus der Warteliste des Kurses \"" .$crs->getTitle() ."\" ausgetragen.";
-				
-			case 'moveUpOnWaitingList':
-				return "Hallo " .$usr->getFirstName() ." Sie sind in der Warteliste für den Kurs \"" .$crs->getTitle() ."\" einen Platz nach oben gestiegen.";
-								
-			default:
-				// throw new \InvalidArgumentException("Event not known", 1);
-				// break;
+		$settings = new Mails\business\MailSettings();
+		$tmp = $settings->getEventTextArray($this->event_name);
 
-		}
+		return $tmp[0] .$usr->getFirstName() . $tmp[1] .$crs->getTitle() . $tmp[2];
+		
+
+		// switch ($this->event_name) {
+		// 	case 'addSubscriber':
+		// 		return "Hallo " .$usr->getFirstName() ." Sie haben sich erfolgreich in den Kurs \"" .$crs->getTitle() ."\" eingeschrieben.";
+							
+		// 	case 'addToWaitingList':
+		// 		return "Hallo " .$usr->getFirstName() ." Sie hwurden erfolgreich der Warteliste für den Kurs \"" .$crs->getTitle() ."\" hinzugefügt.";
+				
+		// 	case 'deleteParticipant':
+		// 		return "Hallo " .$usr->getFirstName() ." Sie wurden erfolgreich aus dem Kurs \"" .$crs->getTitle() ."\" entfernt.";
+				
+		// 	case 'deleteFromWaitingList':
+		// 		return "Hallo " .$usr->getFirstName() ." Sie wurden aus der Warteliste des Kurses \"" .$crs->getTitle() ."\" ausgetragen.";
+				
+		// 	case 'moveUpOnWaitingList':
+		// 		return "Hallo " .$usr->getFirstName() ." Sie sind in der Warteliste für den Kurs \"" .$crs->getTitle() ."\" einen Platz nach oben gestiegen.";
+								
+		// 	default:
+		// 		throw new \InvalidArgumentException("Event not known", 1);
+		// 		break;
+
+		// }
 		
 	}
 }

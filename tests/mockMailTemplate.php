@@ -7,6 +7,7 @@ class mockMailTemplate implements MailTemplate {
 	public $usr_id = null;
 	public $event_name = null;
 	public $crs_id = null;
+	public $response = array();
 
 	public function __construct($usr_id, $event_name, $crs_id) {
 		$this->usr_id = $usr_id;
@@ -26,11 +27,15 @@ class mockMailTemplate implements MailTemplate {
 		return $this->crs_id;
 	}
 
+	public function response() {
+		return implode(' ', $response);
+	}
+
 	/**
 	 * @inerhitdoc
 	 */
 	public function getMailFor($event_name, $user_id, $crs_id) {
-		response = array($event_name, $user_id, $crs_id);
-		return response;
+		$this->$response = ($event_name, $user_id, $crs_id);
+		return "return aus mockMailTemplate->getMailFor()";
 	}
 }
