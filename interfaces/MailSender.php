@@ -11,12 +11,12 @@ interface MailSender {
 	/**
 	 * Sends a mail to User 
 	 * 
-	 * @param 	int 		$userID
+	 * @param 	int 		$usr_id
 	 * @param 	string 		$subject
 	 * @param 	string 		$message 
 	 *
 	 * @return null 
 	 */
-	public function sendMail($userID, $subject, $message);
+	public function sendMail($usr_id, $subject, $message);
 
 }
