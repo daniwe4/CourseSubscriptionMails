@@ -31,10 +31,9 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		
 		
 		$settings = new Mails\business\MailSettings();
-		return $settings->getMailText($this->event_name, $usr->getFirstName(), $crs->getTitle());
+		
+		$builder = $settings->getMailTextBuilder($this->event_name);
 
-		// $tmp = $settings->getEventTextArray($this->event_name);
-
-		// return $tmp[0] .$usr->getFirstName() . $tmp[1] .$crs->getTitle() . $tmp[2];		
+		return $builder($usr, $crs);
 	}
 }

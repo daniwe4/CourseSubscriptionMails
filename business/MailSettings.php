@@ -32,16 +32,25 @@ class MailSettings {
 		}
 	}
 
-	public function getMailText($event, $name, $title) {
+	public function getMailTextBuilder($event) {
 		$handled_events = array(
-			"addSubscriber" => function($name, $title) { return "Hallo $name, Sie haben sich erfolgreich in den Kurs $title eingeschrieben."; },
-			"addToWaitingList" => function($name, $title) { return "Hallo $name, Sie wurden erfolreich auf die Warteliste für den Kurs $title gesetzt."; },
-			"deleteParticipant" => function($name, $title) { return "Hallo $name, Sie wurden erfolgreich aus dem Kurs $title entfernt."; },
-			"deleteFromWaitingList" => function($name, $title) { return "Hallo $name, Sie wurden erfolgreich von der Warteliste des Kurses $title entfernt."; },
-			"moveUpOnWaitingList" => function($name, $title) { return "Hallo $name, Sie sind in der Warteliste für den Kurs $title einen Platz nach oben gestiegen."; }
+			"addSubscriber" => function(\ilObjUser $user, \ilObjCourse $crs) {
+					return "Hallo ".$user->getFullName().", Sie haben sich erfolgreich in den Kurs ".$crs->getTitle()." eingeschrieben.";
+			},
+			"addToWaitingList" => function(\ilObjUser $user, \ilObjCourse $crs) { 
+				return "Hallo ".$user->getFullName().", Sie wurden erfolreich auf die Warteliste für den Kurs ".$crs->getTitle()." gesetzt."; 
+			},
+			"deleteParticipant" => function(\ilObjUser $user, \ilObjCourse $crs) { 
+				return "Hallo ".$user->getFullName().", Sie wurden erfolgreich aus dem Kurs ".$crs->getTitle()." entfernt."; 
+			},
+			"deleteFromWaitingList" => function(\ilObjUser $user, \ilObjCourse $crs) { 
+				return "Hallo ".$user->getFullName().", Sie wurden erfolgreich von der Warteliste des Kurses ".$crs->getTitle()." entfernt."; 
+			},
+			"moveUpOnWaitingList" => function(\ilObjUser $user, \ilObjCourse $crs) { 
+				return "Hallo ".$user->getFullName().", Sie sind in der Warteliste für den Kurs ".$crs->getTitle()." einen Platz nach oben gestiegen."; 
+			}
 		);
 
-		return $handled_events[$event]($name, $title);
-		
+		return $handled_events[$event];
 	}
 }
