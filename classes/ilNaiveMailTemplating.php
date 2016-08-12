@@ -31,32 +31,10 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		
 		
 		$settings = new Mails\business\MailSettings();
-		$tmp = $settings->getEventTextArray($this->event_name);
+		return $settings->getMailText($this->event_name, $usr->getFirstName(), $crs->getTitle());
 
-		return $tmp[0] .$usr->getFirstName() . $tmp[1] .$crs->getTitle() . $tmp[2];
-		
+		// $tmp = $settings->getEventTextArray($this->event_name);
 
-		// switch ($this->event_name) {
-		// 	case 'addSubscriber':
-		// 		return "Hallo " .$usr->getFirstName() ." Sie haben sich erfolgreich in den Kurs \"" .$crs->getTitle() ."\" eingeschrieben.";
-							
-		// 	case 'addToWaitingList':
-		// 		return "Hallo " .$usr->getFirstName() ." Sie hwurden erfolgreich der Warteliste für den Kurs \"" .$crs->getTitle() ."\" hinzugefügt.";
-				
-		// 	case 'deleteParticipant':
-		// 		return "Hallo " .$usr->getFirstName() ." Sie wurden erfolgreich aus dem Kurs \"" .$crs->getTitle() ."\" entfernt.";
-				
-		// 	case 'deleteFromWaitingList':
-		// 		return "Hallo " .$usr->getFirstName() ." Sie wurden aus der Warteliste des Kurses \"" .$crs->getTitle() ."\" ausgetragen.";
-				
-		// 	case 'moveUpOnWaitingList':
-		// 		return "Hallo " .$usr->getFirstName() ." Sie sind in der Warteliste für den Kurs \"" .$crs->getTitle() ."\" einen Platz nach oben gestiegen.";
-								
-		// 	default:
-		// 		throw new \InvalidArgumentException("Event not known", 1);
-		// 		break;
-
-		// }
-		
+		// return $tmp[0] .$usr->getFirstName() . $tmp[1] .$crs->getTitle() . $tmp[2];		
 	}
 }

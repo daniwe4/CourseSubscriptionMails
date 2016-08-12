@@ -36,8 +36,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		$usr = new \ilObjUser($this->usr_id);
 		$arr_dummy = array();
 		$arr_type = array(0,0,1);
-
-		$sender->sendMail($usr->getLogin(), '', '', $this->subject, $this->message, $arr_dummy, $arr_type,1);
+		$sender->sendMail($usr->getLogin(), '', '', $this->subject, $this->message, $arr_dummy, $arr_type, 1);
 		
 	}
 } 

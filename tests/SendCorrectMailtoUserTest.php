@@ -29,13 +29,7 @@ class SendCorrectMailToUserTest extends PHPUnit_Framework_TestCase {
 
 		
 	}
-
-	// public function test_runSuccessfull() {
-
-	// 	$this->assertEquals($this->testClass->sendCorrectMail($this->event_name, $this->usr_id, $this->crs_id), null);
-	// 	$this->assertEquals($this->mockMailTemplate->getMailFor($this->event_name, $this->usr_id, $this->crs_id), "test_ok");
-	// }
-
+	
 	public function test_business() {
 		foreach($this->event_arr as $event) {
 			$this->testClass->sendCorrectMail($event, $this->right_usr_id, $this->right_crs_id);

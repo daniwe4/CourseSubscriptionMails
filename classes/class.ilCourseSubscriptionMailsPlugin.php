@@ -34,7 +34,8 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	final function handleEvent($a_component, $a_event, $a_parameter) {
 
  		$settings = new Mails\business\MailSettings();
- 		
+ 		global $ilLog;
+ 		$ilLog->write("component -->" .$a_component ."  event -->" . print_r($a_event, true) . "  param -->" . print_r($a_parameter, true));
 
 		if ($a_component == "Modules/Course" && $settings->isPluginEvent($a_event)) {
 
