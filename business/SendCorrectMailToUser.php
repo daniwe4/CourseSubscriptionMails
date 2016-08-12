@@ -9,7 +9,7 @@ use CaT\Plugins\CourseSubscriptionMails as Mails;
  * Slelects the correct mail format and send the email
  */
 class SendCorrectMailToUser {
-	protected $mail_template;
+	public $mail_template;
 	protected $mail_sender;
 
 	public function __construct(Mails\interfaces\MailTemplate $mail_template, Mails\interfaces\MailSender $mail_sender) {
@@ -31,10 +31,9 @@ class SendCorrectMailToUser {
 		assert(is_int($usr_id) && $usr_id >= 0);
 		assert(is_int($crs_id) && $crs_id > 0);
 
-		global $ilLog;
-
 		$message = $this->mail_template->getMailFor($event_name, $usr_id, $crs_id);
-		$ilLog->write($message);
 		$this->mail_sender->sendMail($usr_id, 'testmail', $message);
+
+		return null;
 	}
 }

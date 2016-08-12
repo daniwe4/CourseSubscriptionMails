@@ -1,41 +1,26 @@
 <?php
 require_once(__DIR__ . "/../interfaces/MailTemplate.php");
+
+use CaT\Plugins\CourseSubscriptionMails as Mails;
+
 /**
  * Mock for MailTemplate
  */
-class mockMailTemplate implements MailTemplate {
-	public $usr_id = null;
-	public $event_name = null;
-	public $crs_id = null;
-	public $response = array();
-
-	public function __construct($usr_id, $event_name, $crs_id) {
-		$this->usr_id = $usr_id;
-		$this->event_name = $event_name;
-		$this->crs_id = $crs_id;
-	}
-
-	public function usr_id() {
-		return $this->usr_id;
-	}
-
-	public function event_name() {
-		return $this->event_name;
-	}
-
-	public function crs_id() {
-		return $this->crs_id;
-	}
-
-	public function response() {
-		return implode(' ', $response);
-	}
+class mockMailTemplate implements Mails\interfaces\MailTemplate {
+	public $event_name;
+	public $usr_id;
+	public $crs_id;
+	public $return_msg = "test_ok";
 
 	/**
 	 * @inerhitdoc
 	 */
-	public function getMailFor($event_name, $user_id, $crs_id) {
-		$this->$response = ($event_name, $user_id, $crs_id);
-		return "return aus mockMailTemplate->getMailFor()";
+	public function getMailFor($event_name, $usr_id, $crs_id) {
+		$this->event_name = $event_name;
+		$this->usr_id = $usr_id;
+		$this->crs_id = $crs_id;
+
+
+		return $this->return_msg;
 	}
 }
