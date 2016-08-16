@@ -3,6 +3,8 @@
 // basic plugin properties
 // these must be updated for every change done to the plugin code
 
+//use slot: Services/EventHandling/EventHook
+
 // alphanumerical ID of the plugin; never change this
 $id = "xcsm";
 

@@ -3,9 +3,9 @@
 namespace CaT\Plugins\CourseSubscriptionMails\classes;
 
 require_once(__DIR__ . "/../interfaces/MailSender.php");
-require_once(__DIR__ . "/../../../../../../../../Services/Mail/classes/class.ilFormatMail.php");
-require_once(__DIR__ . "/../../../../../../../../Services/Mail/classes/class.ilMailFormCall.php");
-require_once(__DIR__ . "/../../../../../../../../Services/User/classes/class.ilObjUser.php");
+require_once("Services/Mail/classes/class.ilFormatMail.php");
+require_once("Services/Mail/classes/class.ilMailFormCall.php");
+require_once("Services/User/classes/class.ilObjUser.php");
 
 use CaT\Plugins\CourseSubscriptionMails as Mails;
 

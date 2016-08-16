@@ -32,8 +32,8 @@ class SendCorrectMailToUser {
 		assert(is_int($crs_id) && $crs_id > 0);
 
 		$message = $this->mail_template->getMailFor($event_name, $usr_id, $crs_id);
-		if("" != $message) {
 
+		if($message !== "") {
 			$this->mail_sender->sendMail($usr_id, 'testmail', $message);
 		}
 	}

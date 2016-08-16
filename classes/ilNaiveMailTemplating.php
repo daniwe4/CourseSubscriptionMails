@@ -3,7 +3,7 @@
 namespace CaT\Plugins\CourseSubscriptionMails\classes;
 
 require_once(__DIR__ . "/../interfaces/MailTemplate.php");
-require_once(__DIR__ . "/../../../../../../../../Modules/Course/classes/class.ilObjCourse.php");
+require_once("./Modules/Course/classes/class.ilObjCourse.php");
 require_once(__DIR__ . "/../business/MailSettings.php");
 
 use CaT\Plugins\CourseSubscriptionMails as Mails;
@@ -28,8 +28,7 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 
 		$usr = new \ilObjUser($this->usr_id);
 		$crs = new \ilObjCourse($this->crs_id, false);
-		
-		
+				
 		$settings = new Mails\business\MailSettings();
 		
 		$builder = $settings->getMailTextBuilder($this->event_name);
