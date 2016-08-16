@@ -35,4 +35,30 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 
 		return $builder($usr, $crs);
 	}
+
+	
+	public function getSubject($event_name) {
+
+		switch ($event_name) {
+			case 'addParticipant':
+				return 'Buchungsbestätigung Ihres Seminars';
+				break;
+
+			case 'addToWaitingList':
+				return 'Buchung auf Warteliste';
+				break;
+
+			case 'deleteParticipant':
+				return 'Absage Ihrer Seminartailnahme';
+				break;
+
+			case 'removeFromWaitingList':
+				return 'Abmeldung von Warteliste';
+				break;
+
+		}
+
+	}
+
+
 }
