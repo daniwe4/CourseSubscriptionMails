@@ -9,10 +9,11 @@ class MailSettings {
 	protected $event_name;
 
 	protected $possible_events = array(
-		"addSubscriber", 
-		"addToWaitingList", 
+		//"addSubscriber", 
+		"addParticipant", 
+		"addToWaitingList",
 		"deleteParticipant", 
-		"deleteFromWaitingList", 
+		"removeFromWaitingList", 
 	//	"moveUpOnWaitingList"
 	);
 
