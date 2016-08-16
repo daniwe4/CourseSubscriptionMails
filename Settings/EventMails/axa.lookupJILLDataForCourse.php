@@ -43,10 +43,92 @@
 	require($inc_cfg_path .'/content/booking.descmapping.php');
 	//include contents according to type
 	$f = $DESC_MAPPING[$jill_crs_key];
-	require($inc_cfg_path .'/content/coursedescription/'.$f);
+	require($inc_cfg_path .'/content/coursedescription/'.$f); //provides $COURSEDESC
 
 
-	//get CSN Data, if available
+	//to german date
+	//DateTime::createFromFormat('Y-m-d', $dat)->format('d.m.Y');
+	$COURSEDESC['startdate'] = $crs->getCourseStart()->get(IL_CAL_DATE);
+	$COURSEDESC['startdate'] = DateTime::createFromFormat('Y-m-d', $COURSEDESC['startdate'])->format('d.m.Y');
+	
+	require_once("./Services/AXA/Utils/classes/class.axaCourseUtils.php");
+	$cutils = axaCourseUtils::getInstance($crs->getId(), axaCourseUtils);
+	$COURSEDESC['courseStartTime'] = $cutils->getCourseStartTime();
+    $COURSEDESC['courseEndTime'] = $cutils->getCourseEndTime();
+
+
+
+
+	//get texts
+
+	require($inc_cfg_path .'/content/mail/mail.footer.php'); //$MAIL_FOOTER
+	
+	//course-specific mail-template:
+	switch ($jill_crs_key) {
+		case 'OD01': 
+		case 'OD02': 
+		case 'OD03': 
+		case 'OD04': 
+			$course_type = 'webinar';
+			$section = 'od';
+			//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
+			break;
+
+		case 'ODFINAL': 
+			$course_type = 'f2f';
+			$section = 'od';
+			//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
+			break;
+
+		case 'FK01': 
+		case 'FK02': 
+		case 'FK03': 
+		case 'FK04': 
+		case 'FK05': 
+			$course_type = 'webinar';
+			$section = 'fk';
+			//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
+			break;
+		case 'FKFINAL': 
+			$course_type = 'f2f';
+			$section = 'fk';
+	}
+
+
+	if($course_type == 'webinar') {
+		
+		//get CSN Data
+		$res = $ilDB->query("SELECT ref_id FROM object_reference WHERE obj_id = ".$ilDB->quote($crs->getId()));
+        $ret = $ilDB->fetchAssoc($res);
+		$crs_refId = $ret["ref_id"];
+        
+		$children = $tree->getChilds($crs_refId, 'title');
+		$csn_ref = null;
+		foreach ($children as $cnt => $entry) {
+			if($entry['type'] === 'xcsn') {
+				$csn_ref_id = $entry['ref_id'];
+				$csn_obj_id = $entry['obj_id'];
+			}
+		}
+
+		include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/CSN/classes/class.ilObjCSN.php");
+		$csn = new ilObjCSN($csn_ref_id);
+		//$csn->doRead();
+		$csn_data = $csn->csnSettings();
+		
+		$COURSEDESC['CSN_PIN'] = $csn_data->pin();
+		$COURSEDESC['CSN_FON'] = $csn_data->phoneNumber();
+		$COURSEDESC['CSN_LINK'] = $csn_data->link();
+
+
+	}
+
+
+
+	$tpl_path = '/content/mail/'.$course_type.'.'.$mail_template.'.'.$section.'.php';
+	require($inc_cfg_path .$tpl_path); //$MAIL_TEMPLATE
+
+	$MAIL_TEMPLATE .= $MAIL_FOOTER;
 
 	//print_r($COURSEDESC);
 	//die();

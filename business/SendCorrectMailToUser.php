@@ -35,10 +35,10 @@ class SendCorrectMailToUser {
 
 
 		print_r($message);
-		die();
+		//die();
 
 		if($message !== "") {
-			$this->mail_sender->sendMail($usr_id, 'testmail', $message);
+		//	$this->mail_sender->sendMail($usr_id, 'testmail', $message);
 		}
 	}
 }
