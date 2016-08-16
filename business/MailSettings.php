@@ -39,6 +39,33 @@ class MailSettings {
 		}
 	}
 
+	/**
+	 * true, if strings begins with search
+	 *
+	 * @param 	string 	$string
+	 * @param 	string 	$search
+	 *
+	 * @return 	boolean
+	 */
+	private	function startswith ($string, $search) {
+	   return (substr($string, 0, strlen($search)) === $search);
+	}
+
+
+	/**
+	 * Read all files in Settings/EventMails.
+	 * If filename begins with "eventmail.",
+	 * register the remaining part of the filenme as template
+	 *
+	 * files must contain ONE function "genMailText" with
+	 * user-object and crs-object as parameters:
+	 * 		$genMailText  = function (\ilObjUser $user, \ilObjCourse $crs) 
+	 * 
+	 * @param 	string 	$event
+	 *
+	 * @return 	string
+	 */
+
 	public function getMailTextBuilder($event) {
 		
 		$handled_events = array();
@@ -46,8 +73,11 @@ class MailSettings {
 		$tpath = dirname(__FILE__) .'/../Settings/EventMails/';
 		foreach (glob($tpath .'*.php') as $templatefile) {
             $template_event_name =  basename($templatefile, '.php');
-            require $templatefile;
-            $handled_events[$template_event_name] = $genMailText;
+            if($this->startswith($template_event_name, 'eventmail.')){
+            	$template_event_name = str_replace('eventmail.', '', $template_event_name);
+            	require $templatefile;
+            	$handled_events[$template_event_name] = $genMailText;
+            }
 
         }
 /*
