@@ -24,12 +24,11 @@ $genMailText  = function (\ilObjUser $user, \ilObjCourse $crs) {
 		$txt = str_replace('[CSN_LINK]', $COURSEDESC['CSN_LINK'], $txt);
 
 	}
-
+/*
 	if ($course_type == 'f2f') {
-		//$txt = str_replace('[DATUM]', $crsdate, $txt);
-
+		//pass
 	}
-
+*/
 	
 	return $txt;
 }
