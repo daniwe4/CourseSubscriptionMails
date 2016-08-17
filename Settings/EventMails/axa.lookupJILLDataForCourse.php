@@ -27,6 +27,10 @@
 	
 	$ref_id = $row['ref_id'];
 
+	if(! $ref_id) { //crs is not referenced; permanent course? no mail, anyhow!
+		return '';
+	}
+
 	//get parentObj of reference (==BiPro)	
 	require_once("./Modules/StudyProgramme/classes/class.ilObjStudyProgramme.php");
 	$parent_data = $tree->getParentNodeData($ref_id);
