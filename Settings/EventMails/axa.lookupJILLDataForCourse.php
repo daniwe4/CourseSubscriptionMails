@@ -41,6 +41,11 @@
 	$axaSettings = axaSettings::getInstance();
 	$subtype_id = $prg->getSubTypeId();
     $subtype = $axaSettings->getConstById($subtype_id);
+    
+    if($subtype_id == 0 || $subtype == '') {
+    	return '';
+    }
+ 	
  	$jill_crs_key = strtoupper(str_replace('prg_amd_type_', '', $subtype));
 
 	//include content/booking.desc_mapping.php to get $DESC_MAPPING
