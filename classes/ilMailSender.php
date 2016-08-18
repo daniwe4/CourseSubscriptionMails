@@ -34,6 +34,8 @@ class ilMailSender implements Mails\interfaces\MailSender {
 
 		//$sender = new \ilFormatMail($this->usr_id);
 		$sender = new \ilFormatMail(6); //root
+		$sender->setSaveInSentbox(true);
+
 		$usr = new \ilObjUser($this->usr_id);
 
 		$arr_dummy = array();
@@ -56,7 +58,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 
 		$sender->sendMail(
 			$usr->getLogin(), //to
-			'nhaagen@cat06.de', //cc
+			'', //cc
 			'',  //bcc
 			$this->subject, 
 			$this->message, 

@@ -27,6 +27,7 @@
 	
 	$ref_id = $row['ref_id'];
 
+//! break
 	if(! $ref_id) { //crs is not referenced; permanent course? no mail, anyhow!
 		return '';
 	}
@@ -40,10 +41,11 @@
 	require_once("./Services/AXA/Utils/classes/class.axaSettings.php");
 	$axaSettings = axaSettings::getInstance();
 	$subtype_id = $prg->getSubTypeId();
-    $subtype = $axaSettings->getConstById($subtype_id);
-    
+	$subtype = $axaSettings->getConstById($subtype_id);
+
+//! break
     if($subtype_id == 0 || $subtype == '') {
-    	return '';
+		return '';
     }
  	
  	$jill_crs_key = strtoupper(str_replace('prg_amd_type_', '', $subtype));
