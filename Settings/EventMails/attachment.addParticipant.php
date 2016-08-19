@@ -53,12 +53,25 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 
 	$crs_location = $COURSEDESC['LOCATION'];
 	$crs_title = $COURSEDESC['TITLE'] 
-		.'(' 
+		.' (' 
 		. $COURSEDESC['SUBTITLE'] 
 		.')';
-	$crs_description = $COURSEDESC['ZIELE'] 
+	$crs_description = ''
+		.strip_tags($COURSEDESC['ZIELE'])
 		."\n\n"
-		.$COURSEDESC['INHALTE'];
+		.strip_tags($COURSEDESC['INHALTE']);
+
+	$crs_description = str_replace("\r\n", '', $crs_description);
+	$crs_description = str_replace("\n", '\\n', $crs_description);
+	$crs_description = nl2br($crs_description);
+	
+	/*  also:
+ 		vendor/eluceo/ical/src/Eluceo/iCal/Util/PropertyValueUtil::escapeValues
+
+ 		//$value = str_replace("\n", '\\n', $value);
+        $value = str_replace("\n", '\n', $value);
+	*/
+		
 
 	$crs_organizer = $COURSEDESC['PROVIDER'];
 
@@ -85,7 +98,7 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 	//$user_id = $user->getId();
 
 	//sending user: use the fix support user
-	//$user_id = 6;
+	$user_id = 6;
 	$user_id = 3566;
 
 	$ilMailer = new ilMail($user_id);
@@ -110,7 +123,6 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 	
 	$attachments = array($cal_file_name);
 
-	
 	return $attachments;
 }
 
