@@ -67,9 +67,12 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 
 
 
-	$user_id = $user->getId();
-	$ilMailer = new ilMail($user_id);
+	//$user_id = $user->getId();
 
+	//sending user: use the fix support user
+	$user_id = 3566;
+
+	$ilMailer = new ilMail($user_id);
 
 	//if(!file_exists($this->mail_path.'/'.$this->user_id.'_'.$file))
 	$cal_file_name ='iCalEntry.ics';
