@@ -26,25 +26,20 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		//$crs_id = $a_template->getCrsId();
 		$message = $a_template->getMessage();
 		$subject = $a_template->getSubject();
+		$attachments = array();
 		$attachments = $a_template->getAttachments();
 
-		
-//print_r($subject);
-//print_r($message);
-//print_r($attachments);
-//die();
+		$arr_type = array(0,0,1);
 
+		
 		//sender is fix:
 		$sender = new \ilFormatMail(6); //root
 		//$sender = new \ilFormatMail(3365); //support-user
 		$sender->setSaveInSentbox(true);
 
-
+		//recipient:
 		$usr = new \ilObjUser($usr_id);
-		
-		$arr_attach = array();
 
-		$arr_type = array(0,0,1);
 
 		/** send external mail using class.ilMimeMail.php
 		* @param string to
@@ -55,6 +50,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		* @param array attachments
 		* @param array type (normal and/or system and/or email)
 		* @param integer also as email (0,1)
+		*
 		* @access	public
 		* @return	array of saved data
 		*/
@@ -64,7 +60,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 			'',  //bcc
 			$subject, 
 			$message, 
-			$arr_attach,  //attachments
+			$attachments, 
 			$arr_type, //type
 			1 //also as mail
 		));

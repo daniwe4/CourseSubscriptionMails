@@ -52,6 +52,7 @@ class MailSettings {
 	}
 
 
+
 	/**
 	 * Read all files in Settings/EventMails.
 	 * If filename begins with "eventmail.",
@@ -78,7 +79,27 @@ class MailSettings {
             	require $templatefile;
             	$handled_events[$template_event_name] = $genMailText;
             }
+         }
 
 		return $handled_events[$event];
 	}
+
+
+	public function getAttachmentBuilder($event) {
+		
+
+		if($event === 'addParticipant' || 1) {
+			$templatefile = dirname(__FILE__) .'/../Settings/EventMails/attachment.addParticipant.php';
+			require $templatefile;
+			return  $genMailAttachments;
+
+		} else {
+			$no_func = function($usr, $crs){};
+			return $no_func;
+		}
+		
+	}
+
+
+
 }

@@ -5,7 +5,7 @@ namespace CaT\Plugins\CourseSubscriptionMails\classes;
 require_once(__DIR__ . "/../interfaces/MailTemplate.php");
 require_once("./Modules/Course/classes/class.ilObjCourse.php");
 require_once(__DIR__ . "/MailSettings.php");
-require_once(__DIR__ . "/../vendor/autoload.php");
+
 
 use CaT\Plugins\CourseSubscriptionMails as Mails;
 
@@ -135,8 +135,12 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @inheritdoc
 	 */
 	public function getAttachments() {
-		$r = [];
-		return $r;
+		$usr = new \ilObjUser($this->getUserId());
+		$crs = new \ilObjCourse($this->getCourseId(), false);
+		$settings = new Mails\classes\MailSettings();
+		$builder = $settings->getAttachmentBuilder($this->getEventName());
+
+		return $builder($usr, $crs);
 	}
 
 
