@@ -88,7 +88,7 @@ class MailSettings {
 	public function getAttachmentBuilder($event) {
 		
 
-		if($event === 'addParticipant' || 1) {
+		if($event === 'addParticipant') {
 			$templatefile = dirname(__FILE__) .'/../Settings/EventMails/attachment.addParticipant.php';
 			require $templatefile;
 			return  $genMailAttachments;
