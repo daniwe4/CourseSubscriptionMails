@@ -14,58 +14,60 @@ use CaT\Plugins\CourseSubscriptionMails as Mails;
  * Provides a connection to the ILIAS mail system
  */
 class ilMailSender implements Mails\interfaces\MailSender {
-	protected $usr_id;
-	protected $subject;
-	protected $message;
+	//protected $template;
 
-	
 
 	/**
 	 * @inerhitdoc
 	 */
-	public function sendMail($usr_id, $subject, $message) {
-		assert(is_int($usr_id) && $usr_id >= 0);
-		assert(is_string($subject));
-		assert(is_string($message));
+	public function sendMail($a_template) {
+		
+		$usr_id = $a_template->getUserId();
+		//$crs_id = $a_template->getCrsId();
+		$message = $a_template->getMessage();
+		$subject = $a_template->getSubject();
+		$attachments = $a_template->getAttachments();
 
-		$this->usr_id = $usr_id;
-		$this->subject = $subject;
-		$this->message = $message;
+		
+//print_r($subject);
+//print_r($message);
+//print_r($attachments);
+//die();
 
-		//$sender = new \ilFormatMail($this->usr_id);
+		//sender is fix:
 		$sender = new \ilFormatMail(6); //root
+		//$sender = new \ilFormatMail(3365); //support-user
 		$sender->setSaveInSentbox(true);
 
-		$usr = new \ilObjUser($this->usr_id);
 
-		$arr_dummy = array();
+		$usr = new \ilObjUser($usr_id);
+		
+		$arr_attach = array();
+
 		$arr_type = array(0,0,1);
 
-
-
-	/** send external mail using class.ilMimeMail.php
-	* @param string to
-	* @param string cc
-	* @param string bcc
-	* @param string subject
-	* @param string message
-	* @param array attachments
-	* @param array type (normal and/or system and/or email)
-	* @param integer also as email (0,1)
-	* @access	public
-	* @return	array of saved data
-	*/
-
-		$sender->sendMail(
+		/** send external mail using class.ilMimeMail.php
+		* @param string to
+		* @param string cc
+		* @param string bcc
+		* @param string subject
+		* @param string message
+		* @param array attachments
+		* @param array type (normal and/or system and/or email)
+		* @param integer also as email (0,1)
+		* @access	public
+		* @return	array of saved data
+		*/
+		print_r($sender->sendMail(
 			$usr->getLogin(), //to
 			'', //cc
 			'',  //bcc
-			$this->subject, 
-			$this->message, 
-			$arr_dummy,  //attachments
+			$subject, 
+			$message, 
+			$arr_attach,  //attachments
 			$arr_type, //type
 			1 //also as mail
-		);
+		));
 		
 	}
 } 

@@ -1,0 +1,19 @@
+{
+	"name": "ilias/deps",
+	"description": "Dependencies of ILIAS, CourseSubscriptionMails-Plugin",
+	"license": "GPL v3",
+	"authors": [],
+	"require": {
+		"eluceo/ical": "^0.9.0"
+	},
+	"extra": {
+		"eluceo/ical" : {
+			"source" : "http://github.com/markuspoerschke/iCal",
+			"used_version" : "v0.9.0",
+			"wrapped_by" : null,
+			"added_by" : "Denis Klöpfer <mailto:denis.kloepfer@concepts-and-training.de>",
+			"last_update" : "2016-02-18",
+			"last_update_by" : "Denis Klöpfer <mailto:denis.kloepfer@concepts-and-training.de>"
+		}
+	}
+}

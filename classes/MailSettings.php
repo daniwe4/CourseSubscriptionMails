@@ -1,6 +1,6 @@
 <?php
 
-namespace CaT\Plugins\CourseSubscriptionMails\business;
+namespace CaT\Plugins\CourseSubscriptionMails\classes;
 
 /**
  * Defines the settings for mail delivery depending on events

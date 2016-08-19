@@ -11,12 +11,9 @@ interface MailSender {
 	/**
 	 * Sends a mail to User 
 	 * 
-	 * @param 	int 		$usr_id
-	 * @param 	string 		$subject
-	 * @param 	string 		$message 
-	 *
-	 * @return null 
+	 * @param 	object 	$a_template (instance of ilNaiveMailTemplating)
+	 * @return 	null 
 	 */
-	public function sendMail($usr_id, $subject, $message);
+	public function sendMail($a_template);
 
 }
