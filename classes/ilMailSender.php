@@ -33,8 +33,8 @@ class ilMailSender implements Mails\interfaces\MailSender {
 
 		
 		//sender is fix:
-		$sender = new \ilFormatMail(6); //root
-		//$sender = new \ilFormatMail(3365); //support-user
+		//$sender = new \ilFormatMail(6); //root
+		$sender = new \ilFormatMail(3566); //support-user
 		$sender->setSaveInSentbox(true);
 
 		//recipient:
