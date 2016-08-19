@@ -79,28 +79,6 @@ class MailSettings {
             	$handled_events[$template_event_name] = $genMailText;
             }
 
-        }
-/*
-		$handled_events = array(
-			"addSubscriber" => function(\ilObjUser $user, \ilObjCourse $crs) {
-					return "Hallo ".$user->getFullName().", Sie haben sich erfolgreich in den Kurs ".$crs->getTitle()." eingeschrieben.";
-			},
-			"addToWaitingList" => function(\ilObjUser $user, \ilObjCourse $crs) { 
-				return "Hallo ".$user->getFullName().", Sie wurden erfolreich auf die Warteliste für den Kurs ".$crs->getTitle()." gesetzt."; 
-			},
-			"deleteParticipant" => function(\ilObjUser $user, \ilObjCourse $crs) { 
-				return "Hallo ".$user->getFullName().", Sie wurden erfolgreich aus dem Kurs ".$crs->getTitle()." entfernt."; 
-			},
-			"deleteFromWaitingList" => function(\ilObjUser $user, \ilObjCourse $crs) { 
-				return "Hallo ".$user->getFullName().", Sie wurden erfolgreich von der Warteliste des Kurses ".$crs->getTitle()." entfernt."; 
-			},
-			
-			"moveUpOnWaitingList" => function(\ilObjUser $user, \ilObjCourse $crs) { 
-				return "Hallo ".$user->getFullName().", Sie sind in der Warteliste für den Kurs ".$crs->getTitle()." einen Platz nach oben gestiegen."; 
-			}
-		);
-*/
-	
 		return $handled_events[$event];
 	}
 }

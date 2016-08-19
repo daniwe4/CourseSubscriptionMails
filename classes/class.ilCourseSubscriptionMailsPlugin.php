@@ -48,14 +48,6 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 
 			$mail_sender = new Mails\classes\ilMailSender();
 
-/*
-			$processor = new Mails\business\SendCorrectMailToUser($mail_templating, $mail_sender);
-			$processor->sendCorrectMail(
-				$a_event, 
-				(int)$a_parameter["usr_id"], 
-				(int)$a_parameter["obj_id"]
-			);
-*/
 			$mail_sender->sendMail($mail_templating);
 
 		}
