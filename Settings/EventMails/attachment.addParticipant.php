@@ -39,13 +39,28 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 
 
 
-	require_once("./Services/AXA/Utils/classes/class.axaCourseUtils.php");
-	$cutils = axaCourseUtils::getInstance($crs->getId(), axaCourseUtils);
+	//require_once("./Services/AXA/Utils/classes/class.axaCourseUtils.php");
+	//$cutils = axaCourseUtils::getInstance($crs->getId(), axaCourseUtils);
+
+
+	$mail_template = 'invite';
+	//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
+	require(dirname(__FILE__) .'/axa.lookupJILLDataForCourse.php'); //array $COURSEDESC
 
 	$crs_startdate = $crs->getCourseStart()->get(IL_CAL_DATE);
-	$crs_starttime = $cutils->getCourseStartTime();
-	$crs_endtime = $cutils->getCourseEndTime();
-	$crs_location = $cutils->getCourseLocation();
+	$crs_starttime = $COURSEDESC['courseStartTime'];
+	$crs_endtime = $COURSEDESC['courseEndTime'];
+
+	$crs_location = $COURSEDESC['LOCATION'];
+	$crs_title = $COURSEDESC['TITLE'] 
+		.'(' 
+		. $COURSEDESC['SUBTITLE'] 
+		.')';
+	$crs_description = $COURSEDESC['ZIELE'] 
+		."\n\n"
+		.$COURSEDESC['INHALTE'];
+
+	$crs_organizer = $COURSEDESC['PROVIDER'];
 
 	$start_date = $crs_startdate .' ' .$crs_starttime .':00';
 	$end_date = $crs_startdate .' ' .$crs_endtime .':00';
@@ -56,10 +71,10 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 		->setDtEnd(new \DateTime($end_date))
 		->setNoTime(false)
 		->setUseTimezone(true)
-		->setSummary($crs->getTitle())
-		->setLocation($crs_location,$crs_location);
-		//->setDescription($this->getSubtitle())
-		//->setOrganizer(new \Eluceo\iCal\Property\Event\Organizer($organizer));
+		->setSummary($crs_title)
+		->setLocation($crs_location,$crs_location)
+		->setDescription($crs_description)
+		->setOrganizer(new \Eluceo\iCal\Property\Event\Organizer($crs_organizer));
 
 	$calendar
 		->setTimezone($tz)
@@ -70,6 +85,7 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 	//$user_id = $user->getId();
 
 	//sending user: use the fix support user
+	//$user_id = 6;
 	$user_id = 3566;
 
 	$ilMailer = new ilMail($user_id);
