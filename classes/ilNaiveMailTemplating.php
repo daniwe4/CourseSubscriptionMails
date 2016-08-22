@@ -140,7 +140,7 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		$settings = new Mails\classes\MailSettings();
 		$builder = $settings->getAttachmentBuilder($this->getEventName());
 
-		return $builder($usr, $crs);
+		return $builder($usr, $crs, $this);
 	}
 
 

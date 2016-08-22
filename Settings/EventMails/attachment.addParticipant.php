@@ -1,5 +1,6 @@
 <?php
-$genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
+//$genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs, \ilNaiveMailTemplating $templating) {
+$genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs, $templating) {
 	require_once(__DIR__ . "/../../vendor/autoload.php");
 
 
@@ -38,11 +39,6 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 
 
 
-
-	//require_once("./Services/AXA/Utils/classes/class.axaCourseUtils.php");
-	//$cutils = axaCourseUtils::getInstance($crs->getId(), axaCourseUtils);
-
-
 	$mail_template = 'invite';
 	//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
 	require(dirname(__FILE__) .'/axa.lookupJILLDataForCourse.php'); //array $COURSEDESC
@@ -50,16 +46,23 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 	$crs_startdate = $crs->getCourseStart()->get(IL_CAL_DATE);
 	$crs_starttime = $COURSEDESC['courseStartTime'];
 	$crs_endtime = $COURSEDESC['courseEndTime'];
-
 	$crs_location = $COURSEDESC['LOCATION'];
+
+
 	$crs_title = $COURSEDESC['TITLE'] 
 		.' (' 
 		. $COURSEDESC['SUBTITLE'] 
 		.')';
+
+/*
 	$crs_description = ''
 		.strip_tags($COURSEDESC['ZIELE'])
 		."\n\n"
 		.strip_tags($COURSEDESC['INHALTE']);
+*/
+	
+	//get mail-text	
+	$crs_description = $templating->getMessage();
 
 	$crs_description = str_replace("\r\n", '', $crs_description);
 	$crs_description = str_replace("\n", '\\n', $crs_description);
