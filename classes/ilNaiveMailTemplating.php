@@ -120,7 +120,7 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 				break;
 
 			case 'deleteParticipant':
-				return 'Absage Ihrer Seminartailnahme';
+				return 'Absage Ihrer Seminarteilnahme';
 				break;
 
 			case 'removeFromWaitingList':

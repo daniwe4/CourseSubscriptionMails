@@ -66,10 +66,11 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs) {
 	$crs_description = nl2br($crs_description);
 	
 	/*  also:
- 		vendor/eluceo/ical/src/Eluceo/iCal/Util/PropertyValueUtil::escapeValues
-
- 		//$value = str_replace("\n", '\\n', $value);
-        $value = str_replace("\n", '\n', $value);
+ 		vendor/eluceo/ical/src/Eluceo/iCal/Util/PropertyValueUtil::escapeValueAllowNewLine
+		comment out first replace
+		
+ 		 //$value = str_replace('\\', '\\\\', $value);
+        $value = str_replace('"', '\\"', $value);
 	*/
 		
 
