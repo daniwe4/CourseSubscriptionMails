@@ -103,7 +103,8 @@ $genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs, $templatin
 
 	//sending user: use the fix support user
 	$user_id = 6;
-	$user_id = 3566;
+	$user_id = 3566; //dev
+	$user_id = 4380; //live
 
 	$ilMailer = new ilMail($user_id);
 
