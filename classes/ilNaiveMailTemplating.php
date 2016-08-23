@@ -99,10 +99,36 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		$crs = new \ilObjCourse($this->getCourseId(), false);
 				
 		$settings = new Mails\classes\MailSettings();
-
+/*
 		$builder = $settings->getMailTextBuilder($this->getEventName());
-
 		return $builder($usr, $crs);
+*/
+
+		$tpath = dirname(__FILE__) .'/../Settings/EventMails/';
+		switch ($this->getEventName()) {
+			case 'addParticipant':
+				require_once($tpath .'eventmail.addParticipant.php');
+				return genMailText($usr, $crs);
+				break;
+
+			case 'addToWaitingList':
+				require_once($tpath .'eventmail.addToWaitingList.php');
+				return genMailText($usr, $crs);
+				break;
+
+			case 'deleteParticipant':
+				require_once($tpath .'eventmail.deleteParticipant.php');
+				return genMailText($usr, $crs);
+				break;
+
+			case 'removeFromWaitingList':
+				require_once($tpath .'eventmail.removeFromWaitingList.php');
+				return genMailText($usr, $crs);
+				break;
+
+		}
+
+
 	}
 
 	/**
@@ -138,9 +164,19 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		$usr = new \ilObjUser($this->getUserId());
 		$crs = new \ilObjCourse($this->getCourseId(), false);
 		$settings = new Mails\classes\MailSettings();
-		$builder = $settings->getAttachmentBuilder($this->getEventName());
 
-		return $builder($usr, $crs, $this);
+		$tpath = dirname(__FILE__) .'/../Settings/EventMails/';
+		switch ($this->getEventName()) {
+			case 'addParticipant':
+				require_once($tpath .'attachment.addParticipant.php');
+				return genMailAttachments($usr, $crs, $this);
+				break;
+
+		}
+
+		//$builder = $settings->getAttachmentBuilder($this->getEventName());
+		//return $builder($usr, $crs, $this);
+
 	}
 
 

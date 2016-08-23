@@ -1,6 +1,8 @@
 <?php
 //$genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs, \ilNaiveMailTemplating $templating) {
-$genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs, $templating) {
+//$genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs, $templating) {
+
+function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating) {
 	require_once(__DIR__ . "/../../vendor/autoload.php");
 
 

@@ -1,5 +1,6 @@
 <?php
-$genMailText  = function (\ilObjUser $user, \ilObjCourse $crs) {
+//$genMailText  = function (\ilObjUser $user, \ilObjCourse $crs) {
+function genMailText(\ilObjUser $user, \ilObjCourse $crs) {
 	
 	//customer specific:
 	$mail_template = 'waiting';
