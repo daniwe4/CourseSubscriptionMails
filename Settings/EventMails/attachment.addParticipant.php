@@ -45,6 +45,11 @@ function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating) {
 	//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
 	require(dirname(__FILE__) .'/axa.lookupJILLDataForCourse.php'); //array $COURSEDESC
 
+
+	if(! isset($COURSEDESC['courseStartTime'])) {
+		return array();
+	}
+
 	$crs_startdate = $crs->getCourseStart()->get(IL_CAL_DATE);
 	$crs_starttime = $COURSEDESC['courseStartTime'];
 	$crs_endtime = $COURSEDESC['courseEndTime'];

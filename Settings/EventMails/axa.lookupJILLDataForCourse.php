@@ -43,6 +43,7 @@
 	$subtype_id = $prg->getSubTypeId();
 	$subtype = $axaSettings->getConstById($subtype_id);
 
+
 //! break
     if($subtype_id == 0 || $subtype == '') {
 		return '';
