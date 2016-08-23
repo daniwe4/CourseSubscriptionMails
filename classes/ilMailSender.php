@@ -42,7 +42,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		//recipient:
 		$usr = new \ilObjUser($usr_id);
 
-
+		print_r($usr_id);
 		/** send external mail using class.ilMimeMail.php
 		* @param string to
 		* @param string cc
@@ -56,16 +56,20 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		* @access	public
 		* @return	array of saved data
 		*/
-		print_r($sender->sendMail(
-			$usr->getLogin(), //to
-			'', //cc
-			'',  //bcc
-			$subject, 
-			$message, 
-			$attachments, 
-			$arr_type, //type
-			1 //also as mail
-		));
+		if($message) {
+			$sender->sendMail(
+				$usr->getLogin(), //to
+				'', //cc
+				'',  //bcc
+				$subject, 
+				$message, 
+				$attachments, 
+				$arr_type, //type
+				1 //also as mail
+			);
+		}
+
+		print_r('done;');
 		
 	}
 } 
