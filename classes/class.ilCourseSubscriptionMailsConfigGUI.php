@@ -53,7 +53,7 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 			case 'configure':
 			default:
 				$this->init_gui();
-				$this->readUserValuesFromSettingsDB();
+				$this->readUserValues();
 				$this->render_form();
 		}
 
@@ -67,8 +67,14 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	}
 
 
-
-
+	/**
+	 * set parameters for ilobjcomponentsettingsgui,
+	 * set tabs
+	 *
+	 * @param 
+	 * @return 
+	 * 
+	 */
 	protected function init_gui() {
 		global $ilCtrl, $ilTabs, $lng;
 
@@ -77,7 +83,6 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 		$ilCtrl->setParameterByClass("ilobjcomponentsettingsgui", "slot_id", $_GET["slot_id"]);
 		$ilCtrl->setParameterByClass("ilobjcomponentsettingsgui", "plugin_id", $_GET["plugin_id"]);
 		$ilCtrl->setParameterByClass("ilobjcomponentsettingsgui", "pname", $_GET["pname"]);
-
 
 		$ilTabs->clearTargets();
 		$ilTabs->setBackTarget(
@@ -91,13 +96,26 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	}
 
 
+	/**
+	 * render the ui-form ($this->tpl->setContent)
+	 *
+	 * @param 
+	 * @return object ilPropertyFormGUI
+	 * 
+	 */
 	protected function render_form() {
 		$form = $this->getForm();
 		$this->tpl->setContent($form->getHTML());
 	}
 
 
-
+	/**
+	 * build the ui-form
+	 *
+	 * @param 
+	 * @return object ilPropertyFormGUI
+	 * 
+	 */
 	protected function getForm() {
 		global $ilCtrl, $lng;
 		require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
@@ -164,6 +182,16 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	}
 
 
+	/**
+	 * build new ilSetting with module "xcsm"
+	 *
+	 * @access private
+	 * @param 
+	 *
+	 * @return object ilSetting
+	 * 
+	 */
+
 	private function getSettings() {
 		$settings = new ilSetting();
 		$settings->ilSetting('xcsm'); //also reads.
@@ -175,7 +203,7 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	/**
 	 * lookup user by login, write to DB if found.
 	 *
-	 * @access public
+	 * @access private
 	 * @param string $a_login
 	 *
 	 * @return array (string status, string text)
@@ -186,10 +214,7 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 
 		$user_id = ilObjUser::getUserIdByLogin($a_login);
 		if($user_id) {
-
-			$txt = '<pre>' .print_r($this->settings, 1);
 			$this->settings->set('sender_id', $user_id);
-
 			return array('success', 'user saved.');
 		} else {
 			return array('failure', 'no such user.');
@@ -198,7 +223,17 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	} 
 
 
-	private function readUserValuesFromSettingsDB() {
+	/**
+	 * get id from $this->settings and instantiate ilUserObj;
+	 * set sender_mail and sender_name.
+	 *
+	 * @access private
+	 * @param 
+	 * @return 
+	 * 
+	 */
+
+	private function readUserValues() {
 	
 		$this->sender_id = $this->settings->get('sender_id', 6);
 		require_once './Services/User/classes/class.ilObjUser.php';
