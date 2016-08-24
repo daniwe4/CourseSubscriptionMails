@@ -12,6 +12,8 @@ use CaT\Plugins\CourseSubscriptionMails as Mails;
 */
 class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	
+	const PLUGIN_NAME = 'CourseSubscriptionMails';
+
 	/**
 	* Get Plugin Name. Must be same as in class name il<Name>Plugin
 	* and must correspond to plugins subdirectory name.
@@ -19,8 +21,10 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	* @return	string	Plugin Name
 	*/
 	final function getPluginName(){
-		return "CourseSubscriptionMails";
+		return self::PLUGIN_NAME;
 	}
+
+
 
 	/**
 	 * Handle Modules/Course events
@@ -36,7 +40,12 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
  		$settings = new Mails\classes\MailSettings();
 
  		global $ilLog;
- 		$ilLog->write("component -->" .$a_component ."  event -->" . print_r($a_event, true) . "  param -->" . print_r($a_parameter, true));
+ 		$ilLog->write(
+ 			"handle event: " .print_r($a_event, true) 
+ 			." [usr_id: " .$a_parameter["usr_id"]
+ 			.", obj_id: " .$a_parameter["obj_id"]
+ 			."]"
+ 			);
 
 		if ($a_component == "Modules/Course" && $settings->isPluginEvent($a_event)) {
 
@@ -49,6 +58,7 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 			$mail_sender = new Mails\classes\ilMailSender();
 
 			$mail_sender->sendMail($mail_templating);
+ 			$ilLog->write("\n  ->Mail sent.");
 
 		}
 	}

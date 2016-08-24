@@ -1,6 +1,10 @@
 <#1>
 <?php
+	echo "";
+?>
 
-echo "";
-
+<#2>
+<?php
+	//global $ilCtrlStructureReader;
+	//$ilCtrlStructureReader->getStructure();
 ?>
