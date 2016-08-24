@@ -19,7 +19,7 @@ interface MailTemplate {
 	 * @throws 	\InvalidArgumentException on unknown event, user or crs.
 	 * @return 	null 
 	 */
-	public function __construct($a_event_name, $a_usr_id, $a_crs_id);
+	public function __construct($a_event_name, $a_usr_id, $a_crs_id, $a_sender_id);
 
 	
 	/**
@@ -46,5 +46,12 @@ interface MailTemplate {
 	 * @return	array
 	 */
 	public function getAttachments();
+
+	/**
+	 * Get the sender id from config
+	 *
+	 * @return	int
+	 */
+	public function getSenderId();
 
 }

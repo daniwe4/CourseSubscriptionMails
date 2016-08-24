@@ -25,6 +25,19 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	}
 
 
+	/**
+	 * get the sender's user-id from settings
+	 *
+	 * @param
+	 *
+	 * @return 	int
+	 */
+	private function getSenderId() {
+		$settings =  new ilSetting();
+		$settings->ilSetting('xcsm'); //also reads.
+		return (int)$settings->get('sender_id', 6);
+	}
+
 
 	/**
 	 * Handle Modules/Course events
@@ -37,14 +50,15 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	 */
 	final function handleEvent($a_component, $a_event, $a_parameter) {
 
+ 		global $ilLog;
  		$settings = new Mails\classes\MailSettings();
 
- 		global $ilLog;
  		$ilLog->write(
  			"handle event: " .print_r($a_event, true) 
  			." [usr_id: " .$a_parameter["usr_id"]
  			.", obj_id: " .$a_parameter["obj_id"]
  			."]"
+ 			." -  sender_id (cfg): " .$this->getSenderId()
  			);
 
 		if ($a_component == "Modules/Course" && $settings->isPluginEvent($a_event)) {
@@ -52,14 +66,12 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 			$mail_templating = new Mails\classes\ilNaiveMailTemplating(
 				$a_event, 
 				(int)$a_parameter["usr_id"], 
-				(int)$a_parameter["obj_id"]
+				(int)$a_parameter["obj_id"],
+				(int)$this->getSenderId()
 			);
 
 			$mail_sender = new Mails\classes\ilMailSender();
-
 			$mail_sender->sendMail($mail_templating);
- 			$ilLog->write("\n  ->Mail sent.");
-
 		}
 	}
 }

@@ -2,6 +2,8 @@
 
 namespace CaT\Plugins\CourseSubscriptionMails\classes;
 
+
+
 require_once(__DIR__ . "/../interfaces/MailTemplate.php");
 require_once("./Modules/Course/classes/class.ilObjCourse.php");
 require_once(__DIR__ . "/MailSettings.php");
@@ -13,12 +15,15 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	protected $event_name;
 	protected $usr_id;
 	protected $crs_id;
+	protected $sender_id;
 
 	
-	public function __construct($a_event_name, $a_usr_id, $a_crs_id) {
+	public function __construct($a_event_name, $a_usr_id, $a_crs_id, $a_sender_id) {
 		$this->setEventName($a_event_name);
 		$this->setUserId($a_usr_id);
 		$this->setCourseId($a_crs_id);
+		$this->setSenderId($a_sender_id);
+
 	}
 
 	/**
@@ -85,6 +90,28 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	 */
 	public function getCourseId() {
 		return $this->crs_id;
+	}
+
+	
+	/**
+	 * set sender id
+	 *
+	 * @param 	int 	$a_id
+	 * @return
+	 *
+	 */
+	private function setSenderId($a_id) {
+		return $this->sender_id = $a_id;
+	}
+
+	/**
+	 * get sender id
+	 *
+	 * @return 	int
+	 *
+	 */
+	public function getSenderId() {
+		return $this->sender_id;
 	}
 
 

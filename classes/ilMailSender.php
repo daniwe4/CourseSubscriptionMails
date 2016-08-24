@@ -31,18 +31,13 @@ class ilMailSender implements Mails\interfaces\MailSender {
 
 		$arr_type = array(0,0,1);
 
-		
-		//sender is fix:
-		$sender = new \ilFormatMail(6); //root
-//		$sender = new \ilFormatMail(3566); //support-user, dev
-		$sender = new \ilFormatMail(4380); //support-user, live
-		
+		$sender_id = $a_template->getSenderId();
+		$sender = new \ilFormatMail((int)$sender_id);
 		$sender->setSaveInSentbox(true);
 
 		//recipient:
 		$usr = new \ilObjUser($usr_id);
 
-		print_r($usr_id);
 		/** send external mail using class.ilMimeMail.php
 		* @param string to
 		* @param string cc
@@ -56,20 +51,26 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		* @access	public
 		* @return	array of saved data
 		*/
+		global $ilLog;
 		if($message) {
-			$sender->sendMail(
-				$usr->getLogin(), //to
-				'', //cc
-				'',  //bcc
-				$subject, 
-				$message, 
-				$attachments, 
-				$arr_type, //type
-				1 //also as mail
+			$ilLog->write(
+				print_r(
+					$sender->sendMail(
+						$usr->getLogin(), //to
+						'', //cc
+						'',  //bcc
+						$subject,
+						$message,
+						$attachments,
+						$arr_type, //type
+						1 //also as mail
+					)
+					,1
+				)
 			);
 		}
 
-		print_r('done;');
+		//print_r('done;');
 		
 	}
 } 

@@ -105,23 +105,16 @@ function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating) {
 		->addComponent($event);
 
 
+	//sending user: 
+	$sender_id = $templating->getSenderId();
+	$ilMailer = new ilMail((int)$sender_id);
 
-	//$user_id = $user->getId();
 
-	//sending user: use the fix support user
-	$user_id = 6;
-	$user_id = 3566; //dev
-	$user_id = 4380; //live
-
-	$ilMailer = new ilMail($user_id);
-
-	//if(!file_exists($this->mail_path.'/'.$this->user_id.'_'.$file))
 	$cal_file_name ='iCalEntry.ics';
-
 	$cal_file_path = 
 		$ilMailer->mfile->getMailPath()
 		.'/'
-		.$user_id
+		.$sender_id
 		.'_'
 		.$cal_file_name;
 
