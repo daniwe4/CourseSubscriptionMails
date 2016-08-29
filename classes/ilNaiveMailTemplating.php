@@ -153,6 +153,12 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 				return genMailText($usr, $crs);
 				break;
 
+			case 'remindDueCourse':
+				require_once($tpath .'eventmail.remindDueCourse.php');
+				return genMailText($usr, $crs);
+				break;
+
+
 		}
 
 
@@ -178,6 +184,10 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 
 			case 'removeFromWaitingList':
 				return 'Abmeldung von Warteliste';
+				break;			
+
+			case 'remindDueCourse':
+				return 'Erinnerung: Ihre Seminarteilnahme ';
 				break;
 
 		}

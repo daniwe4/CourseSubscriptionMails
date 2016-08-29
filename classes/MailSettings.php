@@ -14,6 +14,7 @@ class MailSettings {
 		"addToWaitingList",
 		"deleteParticipant", 
 		"removeFromWaitingList", 
+		"remindDueCourse"
 	//	"moveUpOnWaitingList"
 	);
 
