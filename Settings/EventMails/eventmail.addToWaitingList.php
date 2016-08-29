@@ -17,7 +17,8 @@ function genMailText(\ilObjUser $user, \ilObjCourse $crs) {
 
 	if ($course_type == 'webinar') {
 
-		$txt = str_replace('[TITEL]', $COURSEDESC['TITLE'], $txt);
+		//$txt = str_replace('[TITEL]', $COURSEDESC['TITLE'], $txt);
+		$txt = str_replace('[TITEL]', $COURSEDESC['LONGTITLE'], $txt);
 		$txt = str_replace('[RUFNUMMER-TEILNEHMER]', $user->getPhoneOffice(), $txt);
 		$txt = str_replace('[INHALTE]', strip_tags($COURSEDESC['INHALTE']), $txt);
 		$txt = str_replace('[PIN]', $COURSEDESC['CSN_PIN'], $txt);
