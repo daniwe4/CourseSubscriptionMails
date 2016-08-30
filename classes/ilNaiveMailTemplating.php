@@ -101,7 +101,7 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	 *
 	 */
 	private function setSenderId($a_id) {
-		return $this->sender_id = $a_id;
+		$this->sender_id = $a_id;
 	}
 
 	/**
