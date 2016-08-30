@@ -51,22 +51,16 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		* @access	public
 		* @return	array of saved data
 		*/
-		global $ilLog;
 		if($message) {
-			$ilLog->write(
-				print_r(
-					$sender->sendMail(
-						$usr->getLogin(), //to
-						'', //cc
-						'',  //bcc
-						$subject,
-						$message,
-						$attachments,
-						$arr_type, //type
-						1 //also as mail
-					)
-					,1
-				)
+			$sender->sendMail(
+				$usr->getLogin(), //to
+				'', //cc
+				'',  //bcc
+				$subject, 
+				$message, 
+				$attachments, 
+				$arr_type, //type
+				1 //also as mail
 			);
 		}
 
