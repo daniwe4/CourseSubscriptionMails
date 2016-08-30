@@ -101,6 +101,7 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	 *
 	 */
 	private function setSenderId($a_id) {
+		assert(is_int($a_id) && $a_id > 0);
 		$this->sender_id = $a_id;
 	}
 
@@ -208,6 +209,10 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 				require_once($tpath .'attachment.addParticipant.php');
 				return genMailAttachments($usr, $crs, $this);
 				break;
+			
+			default:
+				return array();
+
 
 		}
 
@@ -218,3 +223,5 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 
 
 }
+
+?>

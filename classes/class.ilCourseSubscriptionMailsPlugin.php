@@ -75,3 +75,5 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 		}
 	}
 }
+
+?>

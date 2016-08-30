@@ -244,4 +244,5 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	}
 
 }
+
 ?>
