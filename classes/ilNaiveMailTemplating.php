@@ -15,7 +15,7 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	protected $event_name;
 	protected $usr_id;
 	protected $crs_id;
-	protected $sender_id;
+	private $sender_id;
 
 	
 	public function __construct($a_event_name, $a_usr_id, $a_crs_id, $a_sender_id) {
@@ -126,8 +126,8 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		$usr = new \ilObjUser($this->getUserId());
 		$crs = new \ilObjCourse($this->getCourseId(), false);
 				
-		$settings = new Mails\classes\MailSettings();
 /*
+		$settings = new Mails\classes\MailSettings();
 		$builder = $settings->getMailTextBuilder($this->getEventName());
 		return $builder($usr, $crs);
 */
@@ -201,7 +201,6 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	public function getAttachments() {
 		$usr = new \ilObjUser($this->getUserId());
 		$crs = new \ilObjCourse($this->getCourseId(), false);
-		$settings = new Mails\classes\MailSettings();
 
 		$tpath = dirname(__FILE__) .'/../Settings/EventMails/';
 		switch ($this->getEventName()) {
@@ -211,7 +210,7 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 				break;
 			
 			default:
-				return array();
+				return false;
 
 
 		}

@@ -193,9 +193,26 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	 */
 
 	private function getSettings() {
+
+		/*
+		DO NOT USE ilSetting LIKE THAT.
+		IT will horribly reset global $ilSetting!
+
 		$settings = new ilSetting();
 		$settings->ilSetting('xcsm'); //also reads.
 		return $settings;
+		*/
+		global $ilDB;
+		$setting = array();
+		$query = "SELECT * FROM settings WHERE module='xcsm'";
+		$res = $ilDB->query($query);
+
+		while ($row = $ilDB->fetchAssoc($res)) {
+			$setting[$row["keyword"]] = $row["value"];
+		}
+		return $setting;
+
+
 	}
 	
 
@@ -214,7 +231,16 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 
 		$user_id = ilObjUser::getUserIdByLogin($a_login);
 		if($user_id) {
-			$this->settings->set('sender_id', $user_id);
+
+			//$this->settings->set('sender_id', $user_id);
+			global $ilDB;
+			$query = "REPLACE INTO settings (module, keyword, value)"
+				." VALUES ('xcsm', 'sender_id'"
+				." , " .$user_id
+				.")";
+
+			$ilDB->manipulate($query);
+			$this->settings['sender_id'] = $user_id;
 			return array('success', 'user saved.');
 		} else {
 			return array('failure', 'no such user.');
@@ -235,7 +261,8 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 
 	private function readUserValues() {
 	
-		$this->sender_id = $this->settings->get('sender_id', 6);
+		$this->sender_id = $this->settings['sender_id'];
+
 		require_once './Services/User/classes/class.ilObjUser.php';
 		$user =  new ilObjUser($this->sender_id);
 			

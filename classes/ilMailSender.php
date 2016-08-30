@@ -21,7 +21,8 @@ class ilMailSender implements Mails\interfaces\MailSender {
 	 * @inerhitdoc
 	 */
 	public function sendMail($a_template) {
-		
+		global $ilLog;
+
 		$usr_id = $a_template->getUserId();
 		//$crs_id = $a_template->getCrsId();
 		$message = $a_template->getMessage();
@@ -30,12 +31,6 @@ class ilMailSender implements Mails\interfaces\MailSender {
 
 		$arr_type = array(0,0,1);
 
-		
-		//sender is fix:
-//		$sender = new \ilFormatMail(6); //root
-//		$sender = new \ilFormatMail(3566); //support-user, dev
-//		$sender = new \ilFormatMail(4380); //support-user, live
-		
 		$sender_id = $a_template->getSenderId();
 		$sender = new \ilFormatMail($sender_id);
 
@@ -44,7 +39,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		//recipient:
 		$usr = new \ilObjUser($usr_id);
 
-		
+
 		/** send external mail using class.ilMimeMail.php
 		* @param string to
 		* @param string cc
@@ -59,19 +54,22 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		* @return	array of saved data
 		*/
 		if($message) {
-			$sender->sendMail(
-				$usr->getLogin(), //to
-				'', //cc
-				'',  //bcc
-				$subject, 
-				$message, 
-				$attachments, 
-				$arr_type, //type
-				1 //also as mail
+			$ilLog->write(
+				print_r(
+					$sender->sendMail(
+						$usr->getLogin(), //to
+						'', //cc
+						'',  //bcc
+						$subject, 
+						$message, 
+						$attachments, 
+						$arr_type, //type
+						1 //also as mail
+					)
+					,true
+				)
 			);
 		}
-
-		
 		
 	}
 } 

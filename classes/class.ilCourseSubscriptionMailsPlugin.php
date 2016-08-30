@@ -33,9 +33,27 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	 * @return 	int
 	 */
 	private function getSenderId() {
+		/*
+		DO NOT USE ilSetting LIKE THAT.
+		IT will horribly reset global $ilSetting!
+
 		$settings =  new ilSetting();
 		$settings->ilSetting('xcsm'); //also reads.
 		return (int)$settings->get('sender_id', 6);
+		*/
+		global $ilDB;
+		$setting = array();
+		$query = "SELECT * FROM settings WHERE module='xcsm'";
+		$res = $ilDB->query($query);
+
+		while ($row = $ilDB->fetchAssoc($res)) {
+			$setting[$row["keyword"]] = $row["value"];
+		}
+		
+		if(! $setting['sender_id']) {
+			$setting['sender_id'] = 6;
+		}
+		return $setting['sender_id'];
 	}
 
 
