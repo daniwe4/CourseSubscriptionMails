@@ -6,7 +6,7 @@ function genMailText(\ilObjUser $user, \ilObjCourse $crs) {
 	$mail_template = 'invite';
 	//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
 
-	require(dirname(__FILE__) .'/axa.lookupJILLDataForCourse.php'); //array $COURSEDESC
+	//require(dirname(__FILE__) .'/axa.lookupJILLDataForCourse.php'); //array $COURSEDESC
 
 
 	$txt = $MAIL_TEMPLATE;
@@ -31,7 +31,7 @@ function genMailText(\ilObjUser $user, \ilObjCourse $crs) {
 		//pass
 	}
 */
-	
+	$txt .= "Ein super Test";
 	return $txt;
 }
 ?>

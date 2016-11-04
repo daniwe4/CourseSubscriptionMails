@@ -100,9 +100,23 @@ class MailSettings {
 		}
 		
 	}
-
-
-
+	
+	/**
+	 * 
+	 * @global type $tpl
+	 */
+	public function getMailHtml($a_usr, $a_crs, $a_event) {
+		$skin_path = "./Customizing/global/skin/MailTemplates/";
+		
+		$mytpl = new \ilTemplate($skin_path . "tpl.csm_" . $a_event .".html", TRUE, TRUE);
+		$mytpl->setCurrentBlock("TEXT");
+		$mytpl->setVariable("LAST_NAME", $a_usr->getFullname());
+		$mytpl->setVariable("COURSE_NAME", $a_crs->getTitle());
+		$mytpl->parseCurrentBlock();
+		$html = $mytpl->get();
+		return $html;
+		
+	}
 }
 
 ?>

@@ -3,7 +3,7 @@
 namespace CaT\Plugins\CourseSubscriptionMails\classes;
 
 require_once(__DIR__ . "/../interfaces/MailSender.php");
-require_once("Services/Mail/classes/class.ilFormatMail.php");
+require_once("Services/Mail/phpmailer/class.phpmailer.php");
 require_once("Services/Mail/classes/class.ilMailFormCall.php");
 require_once("Services/User/classes/class.ilObjUser.php");
 
@@ -18,59 +18,27 @@ class ilMailSender implements Mails\interfaces\MailSender {
 
 
 	/**
-	 * @inerhitdoc
+	 * @inheritdoc
 	 */
 	public function sendMail($a_template) {
-		global $ilLog;
-
+		
 		$usr_id = $a_template->getUserId();
-		//$crs_id = $a_template->getCrsId();
 		$message = $a_template->getMessage();
 		$subject = $a_template->getSubject();
-		$attachments = $a_template->getAttachments();
+		
+		$sender = new \PHPMailer();
 
-		$arr_type = array(0,0,1);
-
-		$sender_id = $a_template->getSenderId();
-		$sender = new \ilFormatMail($sender_id);
-
-		$sender->setSaveInSentbox(true);
+		//$sender->setSaveInSentbox(true);
 
 		//recipient:
 		$usr = new \ilObjUser($usr_id);
-
-
-		/** send external mail using class.ilMimeMail.php
-		* @param string to
-		* @param string cc
-		* @param string bcc
-		* @param string subject
-		* @param string message
-		* @param array attachments
-		* @param array type (normal and/or system and/or email)
-		* @param integer also as email (0,1)
-		*
-		* @access	public
-		* @return	array of saved data
-		*/
-		if($message) {
-			$ilLog->write(
-				print_r(
-					$sender->sendMail(
-						$usr->getLogin(), //to
-						'', //cc
-						'',  //bcc
-						$subject, 
-						$message, 
-						$attachments, 
-						$arr_type, //type
-						1 //also as mail
-					)
-					,true
-				)
-			);
-		}
 		
+		$sender->AltBody = $sender->html2text($message); // Plain Text
+		$sender->Body = $message; // HTML Text
+		$sender->Subject = $subject;
+		$sender->addAddress($usr->getLogin());
+		$sender->addCC($usr->getEmail());
+		$sender->send();
 	}
 } 
 

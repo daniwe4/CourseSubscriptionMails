@@ -6,7 +6,7 @@ function genMailText(\ilObjUser $user, \ilObjCourse $crs) {
 	$mail_template = 'waiting';
 	//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
 
-	require(dirname(__FILE__) .'/axa.lookupJILLDataForCourse.php'); //array $COURSEDESC
+	//require(dirname(__FILE__) .'/axa.lookupJILLDataForCourse.php'); //array $COURSEDESC
 
 
 	$txt = $MAIL_TEMPLATE;

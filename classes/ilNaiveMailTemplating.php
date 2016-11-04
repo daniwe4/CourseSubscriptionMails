@@ -115,54 +115,31 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		return $this->sender_id;
 	}
 
-
-
-
-
 	/**
 	 * @inheritdoc
 	 */
 	public function getMessage() {
+		
 		$usr = new \ilObjUser($this->getUserId());
 		$crs = new \ilObjCourse($this->getCourseId(), false);
-				
-/*
-		$settings = new Mails\classes\MailSettings();
-		$builder = $settings->getMailTextBuilder($this->getEventName());
-		return $builder($usr, $crs);
-*/
+		$mail_settings = new MailSettings();
 
-		$tpath = dirname(__FILE__) .'/../Settings/EventMails/';
 		switch ($this->getEventName()) {
 			case 'addParticipant':
-				require_once($tpath .'eventmail.addParticipant.php');
-				return genMailText($usr, $crs);
-				break;
+				return $mail_settings->getMailHtml($usr, $crs, "addParticipant");
 
 			case 'addToWaitingList':
-				require_once($tpath .'eventmail.addToWaitingList.php');
-				return genMailText($usr, $crs);
-				break;
+				return $mail_settings->getMailHtml($usr, $crs, "addToWaitingList");
 
 			case 'deleteParticipant':
-				require_once($tpath .'eventmail.deleteParticipant.php');
-				return genMailText($usr, $crs);
-				break;
+				return $mail_settings->getMailHtml($usr, $crs, "deleteParticipant");
 
 			case 'removeFromWaitingList':
-				require_once($tpath .'eventmail.removeFromWaitingList.php');
-				return genMailText($usr, $crs);
-				break;
+				return $mail_settings->getMailHtml($usr, $crs, "removeFromWaitingList");
 
 			case 'remindDueCourse':
-				require_once($tpath .'eventmail.remindDueCourse.php');
-				return genMailText($usr, $crs);
-				break;
-
-
+				return $mail_settings->getMailHtml($usr, $crs, "remindDueCourse");
 		}
-
-
 	}
 
 	/**
@@ -173,54 +150,20 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 		switch ($this->getEventName()) {
 			case 'addParticipant':
 				return 'Buchungsbestätigung Ihres Seminars';
-				break;
 
 			case 'addToWaitingList':
 				return 'Buchung auf Warteliste';
-				break;
 
 			case 'deleteParticipant':
 				return 'Absage Ihrer Seminarteilnahme';
-				break;
 
 			case 'removeFromWaitingList':
-				return 'Abmeldung von Warteliste';
-				break;			
+				return 'Abmeldung von Warteliste';	
 
 			case 'remindDueCourse':
 				return 'Erinnerung: Ihre Seminarteilnahme ';
-				break;
 
 		}
 
 	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function getAttachments() {
-		$usr = new \ilObjUser($this->getUserId());
-		$crs = new \ilObjCourse($this->getCourseId(), false);
-
-		$tpath = dirname(__FILE__) .'/../Settings/EventMails/';
-		switch ($this->getEventName()) {
-			case 'addParticipant':
-				require_once($tpath .'attachment.addParticipant.php');
-				return genMailAttachments($usr, $crs, $this);
-				break;
-			
-			default:
-				return false;
-
-
-		}
-
-		//$builder = $settings->getAttachmentBuilder($this->getEventName());
-		//return $builder($usr, $crs, $this);
-
-	}
-
-
 }
-
-?>

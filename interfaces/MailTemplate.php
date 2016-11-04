@@ -39,14 +39,6 @@ interface MailTemplate {
 	 */
 	public function getSubject();
 
-	
-	/**
-	 * Get the appropriate attachments for the given event, user and course
-	 *
-	 * @return	array
-	 */
-	public function getAttachments();
-
 	/**
 	 * Get the sender id from config
 	 *
