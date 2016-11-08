@@ -2,71 +2,54 @@
 //$genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs, \ilNaiveMailTemplating $templating) {
 //$genMailAttachments  = function (\ilObjUser $user, \ilObjCourse $crs, $templating) {
 
-function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating) {
-//	require_once(__DIR__ . "/../../vendor/autoload.php");
-//
-//
-//	//setup iCal
-//	$calendar = new \Eluceo\iCal\Component\Calendar('makler-akademie.de');
-//
-//	$tz_rule_daytime = new \Eluceo\iCal\Component\TimezoneRule(\Eluceo\iCal\Component\TimezoneRule::TYPE_DAYLIGHT);
-//	$tz_rule_daytime
-//		->setTzName('CEST')
-//		->setDtStart(new \DateTime('1981-03-29 02:00:00', $dtz))
-//		->setTzOffsetFrom('+0100')
-//		->setTzOffsetTo('+0200');
-//	$tz_rule_daytime_rec = new \Eluceo\iCal\Property\Event\RecurrenceRule();
-//	$tz_rule_daytime_rec
-//		->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_YEARLY)
-//		->setByMonth(3)
-//		->setByDay('-1SU');
-//	$tz_rule_daytime->setRecurrenceRule($tz_rule_daytime_rec);
-//	$tz_rule_standart = new \Eluceo\iCal\Component\TimezoneRule(\Eluceo\iCal\Component\TimezoneRule::TYPE_STANDARD);
-//	$tz_rule_standart
-//		->setTzName('CET')
-//		->setDtStart(new \DateTime('1996-10-27 03:00:00', $dtz))
-//		->setTzOffsetFrom('+0200')
-//		->setTzOffsetTo('+0100');
-//	$tz_rule_standart_rec = new \Eluceo\iCal\Property\Event\RecurrenceRule();
-//	$tz_rule_standart_rec
-//		->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_YEARLY)
-//		->setByMonth(10)
-//		->setByDay('-1SU');
-//	$tz_rule_standart->setRecurrenceRule($tz_rule_standart_rec);
-//	$tz = new \Eluceo\iCal\Component\Timezone('Europe/Berlin');
-//	$tz->addComponent($tz_rule_daytime);
-//	$tz->addComponent($tz_rule_standart);
-//	$calendar->setTimezone($tz);
+function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating, $COURSEDESC) {
+	require_once(__DIR__ . "/../../vendor/autoload.php");
 
+	//setup iCal
+	$calendar = new \Eluceo\iCal\Component\Calendar('makler-akademie.de');
 
+	$tz_rule_daytime = new \Eluceo\iCal\Component\TimezoneRule(\Eluceo\iCal\Component\TimezoneRule::TYPE_DAYLIGHT);
+	$tz_rule_daytime
+		->setTzName('CEST')
+		->setDtStart(new \DateTime('1981-03-29 02:00:00', $dtz))
+		->setTzOffsetFrom('+0100')
+		->setTzOffsetTo('+0200');
+	$tz_rule_daytime_rec = new \Eluceo\iCal\Property\Event\RecurrenceRule();
+	$tz_rule_daytime_rec
+		->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_YEARLY)
+		->setByMonth(3)
+		->setByDay('-1SU');
+	$tz_rule_daytime->setRecurrenceRule($tz_rule_daytime_rec);
+	$tz_rule_standart = new \Eluceo\iCal\Component\TimezoneRule(\Eluceo\iCal\Component\TimezoneRule::TYPE_STANDARD);
+	$tz_rule_standart
+		->setTzName('CET')
+		->setDtStart(new \DateTime('1996-10-27 03:00:00', $dtz))
+		->setTzOffsetFrom('+0200')
+		->setTzOffsetTo('+0100');
+	$tz_rule_standart_rec = new \Eluceo\iCal\Property\Event\RecurrenceRule();
+	$tz_rule_standart_rec
+		->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_YEARLY)
+		->setByMonth(10)
+		->setByDay('-1SU');
+	$tz_rule_standart->setRecurrenceRule($tz_rule_standart_rec);
+	$tz = new \Eluceo\iCal\Component\Timezone('Europe/Berlin');
+	$tz->addComponent($tz_rule_daytime);
+	$tz->addComponent($tz_rule_standart);
+	$calendar->setTimezone($tz);
 
-
-	$mail_template = 'invite';
-	//$mail_template = 'invite' | 'storno' | 'waiting' | 'waiting_cancel'
-	require(dirname(__FILE__) .'/axa.lookupJILLDataForCourse.php'); //array $COURSEDESC
-
-
-	if(! isset($COURSEDESC['courseStartTime'])) {
+	if(! isset($COURSEDESC['startdate'])) {
 		return array();
 	}
 
-	$crs_startdate = $crs->getCourseStart()->get(IL_CAL_DATE);
-	$crs_starttime = $COURSEDESC['courseStartTime'];
-	$crs_endtime = $COURSEDESC['courseEndTime'];
+	//$crs_startdate = $crs->getCourseStart()->get(IL_CAL_DATE);
 	$crs_location = $COURSEDESC['LOCATION'];
-
 
 	$crs_title = $COURSEDESC['TITLE'] 
 		.' (' 
 		. $COURSEDESC['SUBTITLE'] 
 		.')';
 
-/*
-	$crs_description = ''
-		.strip_tags($COURSEDESC['ZIELE'])
-		."\n\n"
-		.strip_tags($COURSEDESC['INHALTE']);
-*/
+
 	
 	//get mail-text	
 	$crs_description = $templating->getMessage();
@@ -82,7 +65,6 @@ function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating) {
  		 //$value = str_replace('\\', '\\\\', $value);
         $value = str_replace('"', '\\"', $value);
 	*/
-		
 
 	$crs_organizer = $COURSEDESC['PROVIDER'];
 
@@ -109,7 +91,6 @@ function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating) {
 	$sender_id = $templating->getSenderId();
 	$ilMailer = new ilMail((int)$sender_id);
 
-
 	$cal_file_name ='iCalEntry.ics';
 	$cal_file_path = 
 		$ilMailer->mfile->getMailPath()
@@ -117,7 +98,7 @@ function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating) {
 		.$sender_id
 		.'_'
 		.$cal_file_name;
-
+	
 	if(file_exists($cal_file_path)) {
 		unlink($cal_file_path);
 	}
@@ -130,5 +111,3 @@ function genMailAttachments (\ilObjUser $user, \ilObjCourse $crs, $templating) {
 
 	return $attachments;
 }
-
-?>

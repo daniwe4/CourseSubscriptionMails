@@ -20,7 +20,7 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	private $sender_mail = ''; 
 	private $sender_name = ''; 
 
-
+	private $amd_names = array();
 	/**
 	 * Execute command
 	 *
@@ -46,7 +46,10 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 
 			case 'save':
 				$sender_login = $_POST['sender_login'];
-
+				$amd_send_mail_field = $_POST['amd_send_mail_field'];
+				$amd_send_mail_value = (int)$_POST['amd_send_mail_value'];
+				$myresult = $this->saveAMDTuple($amd_send_mail_field, $amd_send_mail_value);
+				
 				$result = $this->saveUserAsSender($sender_login);
 				$this->tpl->setMessage($result[0], $result[1]);
 
@@ -54,6 +57,7 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 			default:
 				$this->init_gui();
 				$this->readUserValues();
+				$this->readAMDNames();
 				$this->render_form();
 		}
 
@@ -119,15 +123,16 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	protected function getForm() {
 		global $ilCtrl, $lng;
 		require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
-	
+		require_once('./Services/Form/classes/class.ilFormSectionHeaderGUI.php');
 
 		$form = new ilPropertyFormGUI();
 		$form->setTitle('Configure '. $this->tpl->title);
 		$form->setFormAction($ilCtrl->getFormAction($this, "save"));
 
-
-		// User name, login, email filter
-		//include_once("./Services/Form/classes/class.ilTextInputGUI.php");
+		// Sender Field
+		$sh_sender = new ilFormSectionHeaderGUI();
+		$sh_sender->setTitle("Absender");
+		
 		$label = 'Absender:';
 		$user_display =  new ilNonEditableValueGUI($label, "user_display");
 		$user_display->setValue($this->sender_name);
@@ -147,12 +152,31 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 		$user_field->setSubmitFormOnEnter(false);
 		$user_field->setParent($form);
 		$user_field->readFromSession();
+		
+		// AMD Field
+		$sh_amd = new ilFormSectionHeaderGUI();
+		$sh_amd->setTitle("AMD Mails versenden?");
 
+		$label = 'Name des AMD-Felds ob Mails gesendet werden';
+		$user_send_mail_field = new ilSelectInputGUI($label, "amd_send_mail_field");
+		$user_send_mail_field->setOptions($this->amd_names);
+		$user_send_mail_field->setValue($this->settings['amd_field']);
+		$user_send_mail_field->setParent($form);
 
+		$label = "Wert für \"Mails senden\":";
+		$user_send_mail_value = new ilTextInputGUI($label, "amd_send_mail_value");
+		$user_send_mail_value->setValue($this->settings['amd_field_value']);
+		$user_send_mail_value->setParent($form);
+
+		$form->addItem($sh_sender);
 		$form->addItem($user_display);
 		$form->addItem($user_display_id);
 		$form->addItem($user_display_mail);
 		$form->addItem($user_field);
+		
+		$form->addItem($sh_amd);
+		$form->addItem($user_send_mail_field);
+		$form->addItem($user_send_mail_value);
 
 		$form->addCommandButton("save", $lng->txt("save"));
 		$form->addCommandButton("cancel", $lng->txt("cancel"));
@@ -245,7 +269,6 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 		} else {
 			return array('failure', 'no such user.');
 		}
-
 	} 
 
 
@@ -258,18 +281,66 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	 * @return 
 	 * 
 	 */
-
 	private function readUserValues() {
 	
 		$this->sender_id = $this->settings['sender_id'];
 
 		require_once './Services/User/classes/class.ilObjUser.php';
-		$user =  new ilObjUser($this->sender_id);
+		$user = new ilObjUser($this->sender_id);
 			
 		$this->sender_mail = $user->getEmail();
 		$this->sender_name = $user->getFullname();
 	}
+	
+	private function saveAMDTuple($field, $value) {
+		assert(is_string($field) === true);
+		assert(is_int($value) === true);
+		
+		global $ilDB;
+		if(isset($field) && $field != "" && isset($value)) {
+			$query = "REPLACE INTO settings (module, keyword, value)"
+					."VALUES ('xcsm', 'amd_field', $field)";
+			$ilDB->manipulate($query);
+			$query = "REPLACE INTO settings (module, keyword, value)"
+					."VALUES ('xcsm', 'amd_field_value', $value)";
+			$ilDB->manipulate($query);
+			$this->settings['amd_field'] = $field;
+			$this->settings['amd_field_value'] = $value;
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @global type $ilDB
+	 */
+	private function readAMDNames() {
+		global $ilDB;
+		
+		$amd_names = array();
+		$query = "SELECT field_id, title FROM adv_mdf_definition WHERE field_type = 5";
+		$res = $ilDB->query($query);
 
+		while ($row = $ilDB->fetchAssoc($res)) {
+			$amd_names[$row['field_id']] = $row['title'];
+		}
+		
+		$this->amd_names = $amd_names;
+		
+		$query = "SELECT value FROM settings WHERE keyword = 'amd_field'";
+		$res = $ilDB->query($query);
+		$row = $ilDB->fetchAssoc($res);
+		if($row) {
+			$this->amd_field = $row['value'];
+		}
+		
+		$query = "SELECT value FROM settings WHERE keyword = 'amd_field_value'";
+		$res = $ilDB->query($query);
+		$row = $ilDB->fetchAssoc($res);
+		if($row) {
+			$this->amd_field_value = $row['value'];
+		}
+	}
 }
 
 ?>

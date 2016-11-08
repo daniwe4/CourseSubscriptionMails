@@ -63,10 +63,10 @@
 	$COURSEDESC['startdate'] = $crs->getCourseStart()->get(IL_CAL_DATE);
 	$COURSEDESC['startdate'] = DateTime::createFromFormat('Y-m-d', $COURSEDESC['startdate'])->format('d.m.Y');
 	
-	require_once("./Services/AXA/Utils/classes/class.axaCourseUtils.php");
-	$cutils = axaCourseUtils::getInstance($crs->getId(), axaCourseUtils);
-	$COURSEDESC['courseStartTime'] = $cutils->getCourseStartTime();
-    $COURSEDESC['courseEndTime'] = $cutils->getCourseEndTime();
+//	require_once("./Services/AXA/Utils/classes/class.axaCourseUtils.php");
+//	$cutils = axaCourseUtils::getInstance($crs->getId(), axaCourseUtils);
+//	$COURSEDESC['courseStartTime'] = $cutils->getCourseStartTime();
+//    $COURSEDESC['courseEndTime'] = $cutils->getCourseEndTime();
 
 
 

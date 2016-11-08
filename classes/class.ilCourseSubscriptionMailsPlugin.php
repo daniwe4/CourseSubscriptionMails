@@ -3,7 +3,7 @@
 include_once("./Services/EventHandling/classes/class.ilEventHookPlugin.php");
 require_once(__DIR__ . "/ilNaiveMailTemplating.php");
 require_once(__DIR__ . "/ilMailSender.php");
-require_once(__DIR__ . "/MailSettings.php");
+require_once(__DIR__ . "/CourseSubscriptionMailsSettings.php");
 //require_once(__DIR__ . "/../business/SendCorrectMailToUser.php");
 
 use CaT\Plugins\CourseSubscriptionMails as Mails;
@@ -67,29 +67,32 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	 * @return 	null
 	 */
 	final function handleEvent($a_component, $a_event, $a_parameter) {
+		$settings = new Mails\classes\CourseSubscriptionMailsSettings($a_event);
+		if($settings->isCSMEnabled($a_parameter["obj_id"])) {
+			global $ilLog;
 
- 		global $ilLog;
- 		$settings = new Mails\classes\MailSettings();
 
- 		$ilLog->write(
- 			"handle event: " .print_r($a_event, true) 
- 			." [usr_id: " .$a_parameter["usr_id"]
- 			.", obj_id: " .$a_parameter["obj_id"]
- 			."]"
- 			." -  sender_id (cfg): " .$this->getSenderId()
- 			);
 
-		if ($a_component == "Modules/Course" && $settings->isPluginEvent($a_event)) {
+			$ilLog->write(
+				"handle event: " .print_r($a_event, true) 
+				." [usr_id: " .$a_parameter["usr_id"]
+				.", obj_id: " .$a_parameter["obj_id"]
+				."]"
+				." -  sender_id (cfg): " .$this->getSenderId()
+				);
 
-			$mail_templating = new Mails\classes\ilNaiveMailTemplating(
-				$a_event, 
-				(int)$a_parameter["usr_id"], 
-				(int)$a_parameter["obj_id"],
-				(int)$this->getSenderId()
-			);
+			if ($a_component == "Modules/Course" && $settings->isPluginEvent()) {
 
-			$mail_sender = new Mails\classes\ilMailSender();
-			$mail_sender->sendMail($mail_templating);
+				$mail_templating = new Mails\classes\ilNaiveMailTemplating(
+					$a_event, 
+					(int)$a_parameter["usr_id"], 
+					(int)$a_parameter["obj_id"],
+					(int)$this->getSenderId()
+				);
+
+				$mail_sender = new Mails\classes\ilMailSender((int)$a_parameter["usr_id"], (int)$a_parameter["obj_id"]);
+				$mail_sender->sendMail($mail_templating, $settings);
+			}
 		}
 	}
 }
