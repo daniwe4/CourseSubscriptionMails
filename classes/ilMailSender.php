@@ -39,7 +39,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 
 		$usr = new \ilObjUser($usr_id);
 		
-		$iCal = new \CourseSubscriptionMailsICalGenerator($this->crs_id, $this->usr_id, $a_template);
+		$iCal = new CourseSubscriptionMailsICalGenerator($this->crs_id, $this->usr_id, $a_template);
 		$attach_file = $settings->sendAttachment($iCal);
 			
 		$sender->AltBody = $sender->html2text($message); // Plain Text

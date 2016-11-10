@@ -1,6 +1,8 @@
 <?php
 namespace CaT\Plugins\CourseSubscriptionMails\classes;
 
+require_once(__DIR__ . "/class.ilCourseSubscriptionMailsConfig.php");
+
 /**
  * Defines the settings for mail delivery depending on events
  */
@@ -18,6 +20,7 @@ class CourseSubscriptionMailsSettings {
 
 	public function __construct($a_event) {
 		$this->event_name = $a_event;
+		$this->cfg = new \ilCourseSubscriptionMailsConfig();
 	}
 	
 	/**
@@ -38,7 +41,7 @@ class CourseSubscriptionMailsSettings {
 		}
 	}
 	
-	public function sendAttachment(\CourseSubscriptionMailsICalGenerator $iCalGen) {
+	public function sendAttachment(CourseSubscriptionMailsICalGenerator $iCalGen) {
 		if($this->event_name === "addParticipant") {
 			return $iCalGen->buildICal();
 		} else {
@@ -56,8 +59,15 @@ class CourseSubscriptionMailsSettings {
 		$mytpl->setCurrentBlock("TEXT");
 		$mytpl->setVariable("LAST_NAME", $a_usr->getFullname());
 		$mytpl->setVariable("COURSE_NAME", $a_crs->getTitle());
+		
+		$placeholders = $mytpl->getBlockvariables("TEXT");
+		$arr = $this->cfg->parseAMDPlaceholders($placeholders, $mytpl);
+		foreach($arr as $key => $value) {
+			$mytpl->setVariable($key, $value);
+		}
 		$mytpl->parseCurrentBlock();
 		$html = $mytpl->get();
+		
 		return $html;
 		
 	}
@@ -89,5 +99,3 @@ class CourseSubscriptionMailsSettings {
 		return $enabled;
 	}
 }
-
-?>

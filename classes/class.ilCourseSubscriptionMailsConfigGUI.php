@@ -1,6 +1,6 @@
 <?php
 require_once('./Services/Component/classes/class.ilPluginConfigGUI.php');
-
+require_once(__DIR__ . '/class.ilCourseSubscriptionMailsConfig.php');
 
 /**
  * Class ilCourseSubscriptionMailsConfigGUI
@@ -11,16 +11,6 @@ require_once('./Services/Component/classes/class.ilPluginConfigGUI.php');
  */
 class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 	
-	
-	private $cmd; 
-	private $tpl; 
-	private $settings; 
-
-	private $sender_id = 6; 
-	private $sender_mail = ''; 
-	private $sender_name = ''; 
-
-	private $amd_names = array();
 	/**
 	 * Execute command
 	 *
@@ -32,12 +22,12 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 		global $ilCtrl, $tpl;
 		$this->cmd = $ilCtrl->getCmd('configure');
 		$this->tpl = &$tpl;
-		$this->settings = $this->getSettings();
-
+		$this->cfg = new \ilCourseSubscriptionMailsConfig();
+		
 		switch ($this->cmd) {
 
 			case 'userfield_autocomplete':
-				$this->searchUserAutoCompletion();
+				$this->cfg->searchUserAutoCompletion();
 				break;
 
 			case 'cancel':
@@ -46,18 +36,18 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 
 			case 'save':
 				$sender_login = $_POST['sender_login'];
+				$result = $this->cfg->saveUserAsSender($sender_login);
+				$this->tpl->setMessage($result[0], $result[1]);
+				
 				$amd_send_mail_field = $_POST['amd_send_mail_field'];
 				$amd_send_mail_value = (int)$_POST['amd_send_mail_value'];
-				$myresult = $this->saveAMDTuple($amd_send_mail_field, $amd_send_mail_value);
-				
-				$result = $this->saveUserAsSender($sender_login);
-				$this->tpl->setMessage($result[0], $result[1]);
-
+				$amd_result = $this->cfg->saveAMDTuple($amd_send_mail_field, $amd_send_mail_value);
+				$this->tpl->setMessage($amd_result[0], $amd_result[1]);
 			case 'configure':
 			default:
 				$this->init_gui();
-				$this->readUserValues();
-				$this->readAMDNames();
+				$this->cfg->readUserValues();
+				$this->cfg->readAMDNames();
 				$this->render_form();
 		}
 
@@ -73,7 +63,7 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 
 	/**
 	 * set parameters for ilobjcomponentsettingsgui,
-	 * set tabs
+	 * set tabss
 	 *
 	 * @param 
 	 * @return 
@@ -135,15 +125,15 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 		
 		$label = 'Absender:';
 		$user_display =  new ilNonEditableValueGUI($label, "user_display");
-		$user_display->setValue($this->sender_name);
+		$user_display->setValue($this->cfg->getSenderName());
 
 		$label = 'Absender ID:';
 		$user_display_id =  new ilNonEditableValueGUI($label, "user_display_id");
-		$user_display_id->setValue((string)$this->sender_id);		
+		$user_display_id->setValue((string)$this->cfg->getSenderId());		
 
 		$label = 'Absender eMail:';
 		$user_display_mail =  new ilNonEditableValueGUI($label, "user_display_mail");
-		$user_display_mail->setValue($this->sender_mail);
+		$user_display_mail->setValue($this->cfg->getSendermail());
 
 		$label = 'Benutzer suchen:';
 		$user_field = new ilTextInputGUI($label, "sender_login");
@@ -159,13 +149,13 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 
 		$label = 'Name des AMD-Felds ob Mails gesendet werden';
 		$user_send_mail_field = new ilSelectInputGUI($label, "amd_send_mail_field");
-		$user_send_mail_field->setOptions($this->amd_names);
-		$user_send_mail_field->setValue($this->settings['amd_field']);
+		$user_send_mail_field->setOptions($this->cfg->getAMDNames());
+		$user_send_mail_field->setValue($this->cfg->getSettings()['amd_field']);
 		$user_send_mail_field->setParent($form);
 
 		$label = "Wert für \"Mails senden\":";
 		$user_send_mail_value = new ilTextInputGUI($label, "amd_send_mail_value");
-		$user_send_mail_value->setValue($this->settings['amd_field_value']);
+		$user_send_mail_value->setValue($this->cfg->getSettings()['amd_field_value']);
 		$user_send_mail_value->setParent($form);
 
 		$form->addItem($sh_sender);
@@ -182,165 +172,5 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 		$form->addCommandButton("cancel", $lng->txt("cancel"));
 
 		return $form;
-	
-	}
-
-	/**
-	 * Show auto complete results
-	 */
-	protected function searchUserAutoCompletion()
-	{
-		include_once './Services/User/classes/class.ilUserAutoComplete.php';
-		$auto = new ilUserAutoComplete();
-		$auto->setSearchFields(array('login','firstname','lastname','email'));
-		$auto->enableFieldSearchableCheck(false);
-		$auto->setMoreLinkAvailable(true);
-
-		if(($_REQUEST['fetchall']))
-		{
-			$auto->setLimit(ilUserAutoComplete::MAX_ENTRIES);
-		}
-
-		echo $auto->getList($_REQUEST['term']);
-		exit();
-	}
-
-
-	/**
-	 * build new ilSetting with module "xcsm"
-	 *
-	 * @access private
-	 * @param 
-	 *
-	 * @return object ilSetting
-	 * 
-	 */
-
-	private function getSettings() {
-
-		/*
-		DO NOT USE ilSetting LIKE THAT.
-		IT will horribly reset global $ilSetting!
-
-		$settings = new ilSetting();
-		$settings->ilSetting('xcsm'); //also reads.
-		return $settings;
-		*/
-		global $ilDB;
-		$setting = array();
-		$query = "SELECT * FROM settings WHERE module='xcsm'";
-		$res = $ilDB->query($query);
-
-		while ($row = $ilDB->fetchAssoc($res)) {
-			$setting[$row["keyword"]] = $row["value"];
-		}
-		return $setting;
-
-
-	}
-	
-
-
-	/**
-	 * lookup user by login, write to DB if found.
-	 *
-	 * @access private
-	 * @param string $a_login
-	 *
-	 * @return array (string status, string text)
-	 * 
-	 */
-	private function saveUserAsSender($a_login) {
-		require_once './Services/User/classes/class.ilObjUser.php';
-
-		$user_id = ilObjUser::getUserIdByLogin($a_login);
-		if($user_id) {
-
-			//$this->settings->set('sender_id', $user_id);
-			global $ilDB;
-			$query = "REPLACE INTO settings (module, keyword, value)"
-				." VALUES ('xcsm', 'sender_id'"
-				." , " .$user_id
-				.")";
-
-			$ilDB->manipulate($query);
-			$this->settings['sender_id'] = $user_id;
-			return array('success', 'user saved.');
-		} else {
-			return array('failure', 'no such user.');
-		}
-	} 
-
-
-	/**
-	 * get id from $this->settings and instantiate ilUserObj;
-	 * set sender_mail and sender_name.
-	 *
-	 * @access private
-	 * @param 
-	 * @return 
-	 * 
-	 */
-	private function readUserValues() {
-	
-		$this->sender_id = $this->settings['sender_id'];
-
-		require_once './Services/User/classes/class.ilObjUser.php';
-		$user = new ilObjUser($this->sender_id);
-			
-		$this->sender_mail = $user->getEmail();
-		$this->sender_name = $user->getFullname();
-	}
-	
-	private function saveAMDTuple($field, $value) {
-		assert(is_string($field) === true);
-		assert(is_int($value) === true);
-		
-		global $ilDB;
-		if(isset($field) && $field != "" && isset($value)) {
-			$query = "REPLACE INTO settings (module, keyword, value)"
-					."VALUES ('xcsm', 'amd_field', $field)";
-			$ilDB->manipulate($query);
-			$query = "REPLACE INTO settings (module, keyword, value)"
-					."VALUES ('xcsm', 'amd_field_value', $value)";
-			$ilDB->manipulate($query);
-			$this->settings['amd_field'] = $field;
-			$this->settings['amd_field_value'] = $value;
-		}
-		
-	}
-	
-	/**
-	 * 
-	 * @global type $ilDB
-	 */
-	private function readAMDNames() {
-		global $ilDB;
-		
-		$amd_names = array();
-		$query = "SELECT field_id, title FROM adv_mdf_definition WHERE field_type = 5";
-		$res = $ilDB->query($query);
-
-		while ($row = $ilDB->fetchAssoc($res)) {
-			$amd_names[$row['field_id']] = $row['title'];
-		}
-		
-		$this->amd_names = $amd_names;
-		
-		$query = "SELECT value FROM settings WHERE keyword = 'amd_field'";
-		$res = $ilDB->query($query);
-		$row = $ilDB->fetchAssoc($res);
-		if($row) {
-			$this->amd_field = $row['value'];
-		}
-		
-		$query = "SELECT value FROM settings WHERE keyword = 'amd_field_value'";
-		$res = $ilDB->query($query);
-		$row = $ilDB->fetchAssoc($res);
-		if($row) {
-			$this->amd_field_value = $row['value'];
-		}
 	}
 }
-
-?>

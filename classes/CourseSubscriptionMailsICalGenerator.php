@@ -1,26 +1,40 @@
 <?php
+namespace CaT\Plugins\CourseSubscriptionMails\classes;
 
 require_once("Services/User/classes/class.ilObjUser.php");
 require_once("Modules/Course/classes/class.ilObjCourse.php");
 require_once(__DIR__ . "/ilNaiveMailTemplating.php");
 require_once("Services/Mail/phpmailer/class.phpmailer.php");
+require_once(__DIR__ . "/class.ilCourseSubscriptionMailsConfig.php");
 
 use CaT\Plugins\CourseSubscriptionMails\interfaces as Mails;
 
 class CourseSubscriptionMailsICalGenerator {
+	private $description;
+	private $dt_start;
+	private $dt_end;
+	private $location;
+	private $organizer;
+
 	public function __construct($crs_id, $usr_id, Mails\MailTemplate $nmtpl) {
+		global $tpl;
+
+		$this->cfg = new \ilCourseSubscriptionMailsConfig();
+		$this->tpl = $tpl;
 		$this->crs_id = $crs_id;
 		$this->usr_id = $usr_id;
 		$this->nmtpl = $nmtpl;
+		$this->getAMDFields();
+
 	}
-	
+
 	public function getCourse() {
 		if($this->crs === null) {
-			$this->crs = new ilObjCourse($this->crs_id, false);
+			$this->crs = new \ilObjCourse($this->crs_id, false);
 		}
 		return $this->crs;
 	}
-	
+
 	public function getCourseStartDate() {
 		if($this->crs === null) {
 			$this->getCourse();
@@ -28,7 +42,7 @@ class CourseSubscriptionMailsICalGenerator {
 		}
 		return $this->crs->getCourseStart()->get(IL_CAL_DATE);
 	}
-	
+
 	public function getCoursEndDate() {
 		if($this->crs === null) {
 			$this->getCourse();
@@ -36,22 +50,44 @@ class CourseSubscriptionMailsICalGenerator {
 		}
 		return $this->crs->getCourseEnd()->get(IL_CAL_DATE);
 	}
-	
+
 	public function getCourseStartDateTime() {
-		return $this->getCourseStartDate() . " 00:01";
+		if($this->dt_start !== "" && preg_match('#(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})#',  $this->dt_start)){
+			return $this->dt_start;
+		}
+		return $this->getCourseStartDate() . " 00:01:00";
 	}
-	
+
 	public function getCourseEndDatetime() {
-		return $this->getCoursEndDate() . " 23:59";
+		if($this->dt_end !== "" && preg_match('#(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})#', $this->dt_end)) {
+			return $this->dt_end;
+		}
+		return $this->getCoursEndDate() . " 23:59:00";
 	}
-	
+
 	public function getMailDescription() {
-		$tmp = new \PHPMailer();
-		return $tmp->html2text($this->nmtpl->getMessage());
+		if($this->description) {
+			return $this->description;
+		}
+		return "";
 	}
-	
+
 	public function getMailSummary() {
 		return $this->nmtpl->getSubject();
+	}
+
+	public function getOrganizer() {
+		if($this->organizer !== "") {
+			return $this->organizer;
+		}
+		return "";
+	}
+
+	public function getLocation() {
+		if($this->location !== "") {
+			return $this->location;
+		}
+		return "";
 	}
 	
 	public function buildICal() {
@@ -95,11 +131,11 @@ class CourseSubscriptionMailsICalGenerator {
 			->setDtStart(new \DateTime($this->getCourseStartDateTime()))
 			->setDtEnd(new \DateTime($this->getCourseEndDatetime()))
 			->setNoTime(false)
-			->setLocation("","")
+			->setLocation($this->getLocation(),"")
 			->setUseTimezone(true)
 			->setSummary($this->getMailSummary())
 			->setDescription($this->getMailDescription())
-			->setOrganizer(new \Eluceo\iCal\Property\Event\Organizer(""));
+			->setOrganizer(new \Eluceo\iCal\Property\Event\Organizer($this->getOrganizer()));
 		
 		$calendar
 			->setTimezone($tz)
@@ -107,7 +143,7 @@ class CourseSubscriptionMailsICalGenerator {
 		
 		//sending user: 
 		$sender_id = $this->nmtpl->getSenderId();
-		$ilMailer = new ilMail((int)$sender_id);
+		$ilMailer = new \ilMail((int)$sender_id);
 		
 		$cal_file_name ='iCalEntry.ics';
 		$cal_file_path = 
@@ -128,6 +164,68 @@ class CourseSubscriptionMailsICalGenerator {
 		$attachments = array($cal_file_path);
 
 		return $attachments;
-		
+	}
+
+	private function getAMDFields() {
+		$placeholders = array();
+
+		$tpl_file = "./Customizing/global/skin/MailTemplates/tpl.csm_iCal.html";
+		$this->tpl->loadTemplateFile($tpl_file);
+
+		$placeholders = $this->tpl->getBlockvariables("DTStart");
+		$this->dt_start = $this->buildIcalBlock
+							( "DTStart"
+							, $tpl_file
+							, $this->cfg->parseAMDPlaceholders($placeholders)
+							);
+
+		$placeholders = $this->tpl->getBlockvariables("DTEnd");
+		$this->dt_end = $this->buildIcalBlock
+							( "DTEnd"
+							, $tpl_file
+							, $this->cfg->parseAMDPlaceholders($placeholders)
+							);
+
+		$placeholders = $this->tpl->getBlockvariables("Location");
+		$this->location = $this->buildIcalBlock
+							( "Location"
+							, $tpl_file
+							, $this->cfg->parseAMDPlaceholders($placeholders)
+							);
+
+		$placeholders = $this->tpl->getBlockvariables("Description");
+		$this->description = $this->buildIcalBlock
+							( "Description"
+							, $tpl_file
+							, $this->cfg->parseAMDPlaceholders($placeholders)
+							);
+
+		$placeholders = $this->tpl->getBlockvariables("Organizer");
+		$this->organizer = $this->buildIcalBlock
+							( "Organizer"
+							, $tpl_file
+							, $this->cfg->parseAMDPlaceholders($placeholders)
+							);
+	}
+
+	private function buildIcalBlock($which, $tpl_file, $vars) {
+
+		try{
+			$tpl = new \ilTemplate($tpl_file, true, true);
+			$tpl->setCurrentBlock($which);
+			foreach ($vars as $key => $value) {
+				$tpl->setVariable($key, $value);
+			}
+			$tpl->setVariable("DO_NOT_DELETE", "");
+
+			$tpl->parseCurrentBlock();
+		}
+		catch (Exception $e) {
+			global $ilLog;
+			$ilLog->write("Error on building iCal for CSM: " . $e);
+			return "";
+		}
+
+		return trim($tpl->get());
 	}
 }

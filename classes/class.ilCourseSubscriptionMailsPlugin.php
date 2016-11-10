@@ -4,7 +4,6 @@ include_once("./Services/EventHandling/classes/class.ilEventHookPlugin.php");
 require_once(__DIR__ . "/ilNaiveMailTemplating.php");
 require_once(__DIR__ . "/ilMailSender.php");
 require_once(__DIR__ . "/CourseSubscriptionMailsSettings.php");
-//require_once(__DIR__ . "/../business/SendCorrectMailToUser.php");
 
 use CaT\Plugins\CourseSubscriptionMails as Mails;
 /**
@@ -27,8 +26,6 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 
 	/**
 	 * get the sender's user-id from settings
-	 *
-	 * @param
 	 *
 	 * @return 	int
 	 */
@@ -96,5 +93,3 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 		}
 	}
 }
-
-?>
