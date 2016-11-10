@@ -176,35 +176,35 @@ class CourseSubscriptionMailsICalGenerator {
 		$this->dt_start = $this->buildIcalBlock
 							( "DTStart"
 							, $tpl_file
-							, $this->cfg->parseAMDPlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders)
 							);
 
 		$placeholders = $this->tpl->getBlockvariables("DTEnd");
 		$this->dt_end = $this->buildIcalBlock
 							( "DTEnd"
 							, $tpl_file
-							, $this->cfg->parseAMDPlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders)
 							);
 
 		$placeholders = $this->tpl->getBlockvariables("Location");
 		$this->location = $this->buildIcalBlock
 							( "Location"
 							, $tpl_file
-							, $this->cfg->parseAMDPlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders)
 							);
 
 		$placeholders = $this->tpl->getBlockvariables("Description");
 		$this->description = $this->buildIcalBlock
 							( "Description"
 							, $tpl_file
-							, $this->cfg->parseAMDPlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders)
 							);
 
 		$placeholders = $this->tpl->getBlockvariables("Organizer");
 		$this->organizer = $this->buildIcalBlock
 							( "Organizer"
 							, $tpl_file
-							, $this->cfg->parseAMDPlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders)
 							);
 	}
 

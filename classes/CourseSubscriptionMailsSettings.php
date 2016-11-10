@@ -61,7 +61,7 @@ class CourseSubscriptionMailsSettings {
 		$mytpl->setVariable("COURSE_NAME", $a_crs->getTitle());
 		
 		$placeholders = $mytpl->getBlockvariables("TEXT");
-		$arr = $this->cfg->parseAMDPlaceholders($placeholders, $mytpl);
+		$arr = $this->cfg->parsePlaceholders($placeholders, $mytpl);
 		foreach($arr as $key => $value) {
 			$mytpl->setVariable($key, $value);
 		}
