@@ -83,7 +83,7 @@ class CourseSubscriptionMailsSettings {
 			$plugin_settings[$row['keyword']] = $row['value'];
 		}
 		
-		$query = "SELECT value FROM adv_md_values_int WHERE field_id = " . $plugin_settings['amd_field'] . " AND obj_id = '" . $crs_id . "';";
+		$query = "SELECT value FROM adv_md_values_text WHERE field_id = " . $plugin_settings['amd_field'] . " AND obj_id = '" . $crs_id . "';";
 		$result  = $ilDB->query($query);
 		$value = $ilDB->fetchAssoc($result)['value'];
 		
