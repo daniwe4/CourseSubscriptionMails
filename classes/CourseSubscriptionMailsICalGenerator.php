@@ -34,6 +34,13 @@ class CourseSubscriptionMailsICalGenerator {
 		}
 		return $this->crs;
 	}
+	
+	public function getUser() {
+		if($this->usr === null) {
+			$this->usr = new \ilObjUser($this->user_id);
+		}
+		return $this->usr;
+	}
 
 	public function getCourseStartDate() {
 		if($this->crs === null) {
@@ -176,35 +183,35 @@ class CourseSubscriptionMailsICalGenerator {
 		$this->dt_start = $this->buildIcalBlock
 							( "DTStart"
 							, $tpl_file
-							, $this->cfg->parsePlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 
 		$placeholders = $this->tpl->getBlockvariables("DTEnd");
 		$this->dt_end = $this->buildIcalBlock
 							( "DTEnd"
 							, $tpl_file
-							, $this->cfg->parsePlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 
 		$placeholders = $this->tpl->getBlockvariables("Location");
 		$this->location = $this->buildIcalBlock
 							( "Location"
 							, $tpl_file
-							, $this->cfg->parsePlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 
 		$placeholders = $this->tpl->getBlockvariables("Description");
 		$this->description = $this->buildIcalBlock
 							( "Description"
 							, $tpl_file
-							, $this->cfg->parsePlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 
 		$placeholders = $this->tpl->getBlockvariables("Organizer");
 		$this->organizer = $this->buildIcalBlock
 							( "Organizer"
 							, $tpl_file
-							, $this->cfg->parsePlaceholders($placeholders)
+							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 	}
 

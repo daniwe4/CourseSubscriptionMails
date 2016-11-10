@@ -57,11 +57,8 @@ class CourseSubscriptionMailsSettings {
 		
 		$mytpl = new \ilTemplate($skin_path . "tpl.csm_" . $a_event .".html", TRUE, TRUE);
 		$mytpl->setCurrentBlock("TEXT");
-		$mytpl->setVariable("LAST_NAME", $a_usr->getFullname());
-		$mytpl->setVariable("COURSE_NAME", $a_crs->getTitle());
-		
 		$placeholders = $mytpl->getBlockvariables("TEXT");
-		$arr = $this->cfg->parsePlaceholders($placeholders, $mytpl);
+		$arr = $this->cfg->parsePlaceholders($placeholders, $a_usr, $a_crs);
 		foreach($arr as $key => $value) {
 			$mytpl->setVariable($key, $value);
 		}
