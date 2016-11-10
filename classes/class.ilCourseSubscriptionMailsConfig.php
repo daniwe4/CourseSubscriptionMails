@@ -134,7 +134,7 @@ class ilCourseSubscriptionMailsConfig {
 		global $ilDB;
 
 		$amd_names = array();
-		$query = "SELECT field_id, title FROM adv_mdf_definition WHERE field_type = 5";
+		$query = "SELECT field_id, title FROM adv_mdf_definition";
 		$res = $ilDB->query($query);
 
 		while ($row = $ilDB->fetchAssoc($res)) {
