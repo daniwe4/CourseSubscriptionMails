@@ -126,19 +126,19 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 
 		switch ($this->getEventName()) {
 			case 'addParticipant':
-				return $mail_settings->getMailHtml($usr, $crs, "addParticipant");
+				return $mail_settings->getMailHtml($usr, $crs, "addParticipant", "BODY");
 
 			case 'addToWaitingList':
-				return $mail_settings->getMailHtml($usr, $crs, "addToWaitingList");
+				return $mail_settings->getMailHtml($usr, $crs, "addToWaitingList", "BODY");
 
 			case 'deleteParticipant':
-				return $mail_settings->getMailHtml($usr, $crs, "deleteParticipant");
+				return $mail_settings->getMailHtml($usr, $crs, "deleteParticipant", "BODY");
 
 			case 'removeFromWaitingList':
-				return $mail_settings->getMailHtml($usr, $crs, "removeFromWaitingList");
+				return $mail_settings->getMailHtml($usr, $crs, "removeFromWaitingList", "BODY");
 
 			case 'remindDueCourse':
-				return $mail_settings->getMailHtml($usr, $crs, "remindDueCourse");
+				return $mail_settings->getMailHtml($usr, $crs, "remindDueCourse", "BODY");
 		}
 	}
 
@@ -146,22 +146,25 @@ class ilNaiveMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @inheritdoc
 	 */
 	public function getSubject() {
-
+		$usr = new \ilObjUser($this->getUserId());
+		$crs = new \ilObjCourse($this->getCourseId(), false);
+		$mail_settings = new CourseSubscriptionMailsSettings($this->getEventName());
+		
 		switch ($this->getEventName()) {
 			case 'addParticipant':
-				return 'Buchungsbestätigung Ihres Seminars';
+				return $mail_settings->getMailHtml($usr, $crs, "addParticipant", "SUBJECT");
 
 			case 'addToWaitingList':
-				return 'Buchung auf Warteliste';
+				return $mail_settings->getMailHtml($usr, $crs, "addToWaitingList", "SUBJECT");
 
 			case 'deleteParticipant':
-				return 'Absage Ihrer Seminarteilnahme';
+				return $mail_settings->getMailHtml($usr, $crs, "deleteParticipant", "SUBJECT");
 
 			case 'removeFromWaitingList':
-				return 'Abmeldung von Warteliste';	
+				return $mail_settings->getMailHtml($usr, $crs, "removeFromWaitingList", "SUBJECT");	
 
 			case 'remindDueCourse':
-				return 'Erinnerung: Ihre Seminarteilnahme ';
+				return $mail_settings->getMailHtml($usr, $crs, "remindDueCourse", "SUBJECT");
 
 		}
 

@@ -52,21 +52,20 @@ class CourseSubscriptionMailsSettings {
 	 * 
 	 * @global type $tpl
 	 */
-	public function getMailHtml($a_usr, $a_crs, $a_event) {
+	public function getMailHtml($a_usr, $a_crs, $a_event, $a_block) {
 		$skin_path = "./Customizing/global/skin/MailTemplates/";
 		
 		$mytpl = new \ilTemplate($skin_path . "tpl.csm_" . $a_event .".html", TRUE, TRUE);
-		$mytpl->setCurrentBlock("TEXT");
-		$placeholders = $mytpl->getBlockvariables("TEXT");
+		$mytpl->setCurrentBlock($a_block);
+		$placeholders = $mytpl->getBlockvariables($a_block);
 		$arr = $this->cfg->parsePlaceholders($placeholders, $a_usr, $a_crs);
 		foreach($arr as $key => $value) {
 			$mytpl->setVariable($key, $value);
 		}
+		$mytpl->setVariable("DO_NOT_DELETE", "");
 		$mytpl->parseCurrentBlock();
-		$html = $mytpl->get();
 		
-		return $html;
-		
+		return $mytpl->get();
 	}
 	
 	public function isCSMEnabled($crs_id) {
