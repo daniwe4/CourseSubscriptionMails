@@ -65,7 +65,7 @@ class CourseSubscriptionMailsSettings {
 		$mytpl->setVariable("DO_NOT_DELETE", "");
 		$mytpl->parseCurrentBlock();
 		
-		return htmlentities($mytpl->get());
+		return $mytpl->get();
 	}
 	
 	public function isCSMEnabled($crs_id) {
