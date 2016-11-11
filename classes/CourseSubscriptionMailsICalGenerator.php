@@ -17,9 +17,6 @@ class CourseSubscriptionMailsICalGenerator {
 	private $organizer;
 
 	public function __construct($crs_id, $usr_id, Mails\MailTemplate $nmtpl) {
-		global $tpl;
-
-		$this->tpl = $tpl;
 		$this->crs_id = $crs_id;
 		$this->usr_id = $usr_id;
 		$this->nmtpl = $nmtpl;
@@ -176,37 +173,37 @@ class CourseSubscriptionMailsICalGenerator {
 		$this->cfg = new \ilCourseSubscriptionMailsConfig();
 		
 		$tpl_file = "./Customizing/global/skin/MailTemplates/tpl.csm_iCal.html";
-		$this->tpl->loadTemplateFile($tpl_file);
+		$tpl = new \ilTemplate($tpl_file, true, true);
 
-		$placeholders = $this->tpl->getBlockvariables("DTStart");
+		$placeholders = $tpl->getBlockvariables("DTStart");
 		$this->dt_start = $this->buildIcalBlock
 							( "DTStart"
 							, $tpl_file
 							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 
-		$placeholders = $this->tpl->getBlockvariables("DTEnd");
+		$placeholders = $tpl->getBlockvariables("DTEnd");
 		$this->dt_end = $this->buildIcalBlock
 							( "DTEnd"
 							, $tpl_file
 							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 
-		$placeholders = $this->tpl->getBlockvariables("Location");
+		$placeholders = $tpl->getBlockvariables("Location");
 		$this->location = $this->buildIcalBlock
 							( "Location"
 							, $tpl_file
 							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 
-		$placeholders = $this->tpl->getBlockvariables("Description");
+		$placeholders = $tpl->getBlockvariables("Description");
 		$this->description = $this->buildIcalBlock
 							( "Description"
 							, $tpl_file
 							, $this->cfg->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse())
 							);
 
-		$placeholders = $this->tpl->getBlockvariables("Organizer");
+		$placeholders = $tpl->getBlockvariables("Organizer");
 		$this->organizer = $this->buildIcalBlock
 							( "Organizer"
 							, $tpl_file
