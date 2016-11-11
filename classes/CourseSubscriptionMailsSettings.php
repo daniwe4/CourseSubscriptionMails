@@ -42,11 +42,7 @@ class CourseSubscriptionMailsSettings {
 	}
 	
 	public function sendAttachment(CourseSubscriptionMailsICalGenerator $iCalGen) {
-		if($this->event_name === "addParticipant") {
-			return $iCalGen->buildICal();
-		} else {
-			return null;
-		}
+		return null;
 	}
 	/**
 	 * 
