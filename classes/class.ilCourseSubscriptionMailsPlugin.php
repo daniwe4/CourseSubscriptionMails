@@ -82,7 +82,7 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 					if ($a_event == "addParticipant") {
 						$this->added_to_member_list[] = $a_parameter["usr_id"];
 					}
-					else ($a_event == "removeFromWaitingList") {
+					else if ($a_event == "removeFromWaitingList") {
 						// Read comment for added_to_member_list.
 						if (in_array($a_parameter["usr_id"], $this->added_to_member_list)) {
 							return;
