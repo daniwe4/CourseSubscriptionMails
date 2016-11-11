@@ -14,6 +14,15 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	const PLUGIN_NAME = 'CourseSubscriptionMails';
 
 	/**
+	 * When a user is moved from the waiting list to the participants list,
+	 * two events are created for the same user: addParticipant and
+	 * removeFromWaitingList. This is bad, since a user should only get
+	 * the message that he was actually added. We store the user that were
+	 * added to prevent the second mail.
+	 */
+	protected $added_to_member_list = array();
+
+	/**
 	* Get Plugin Name. Must be same as in class name il<Name>Plugin
 	* and must correspond to plugins subdirectory name.
 	*
@@ -69,6 +78,16 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 				$settings = new Mails\classes\CourseSubscriptionMailsSettings($a_event);
 				if($settings->isPluginEvent() && $settings->isCSMEnabled($a_parameter["obj_id"])) {
 					global $ilLog;
+
+					if ($a_event == "addParticipant") {
+						$this->added_to_member_list[] = $a_parameter["usr_id"];
+					}
+					else ($a_event == "removeFromWaitingList") {
+						// Read comment for added_to_member_list.
+						if (in_array($a_parameter["usr_id"], $this->added_to_member_list)) {
+							return;
+						}
+					}
 
 					$ilLog->write(
 						"Plugin.CSM.handleEvent"
