@@ -67,15 +67,11 @@ class CourseSubscriptionMailsICalGenerator {
 		return $this->getCoursEndDate() . " 23:59:00";
 	}
 
-	public function getMailDescription() {
+	public function getDescription() {
 		if($this->description) {
 			return $this->description;
 		}
 		return "";
-	}
-
-	public function getMailSummary() {
-		return $this->nmtpl->getSubject();
 	}
 
 	public function getOrganizer() {
@@ -135,8 +131,8 @@ class CourseSubscriptionMailsICalGenerator {
 			->setNoTime(false)
 			->setLocation($this->getLocation(),"")
 			->setUseTimezone(true)
-			->setSummary($this->getMailSummary())
-			->setDescription($this->getMailDescription())
+			->setSummary($this->getCourse()->getTitle())
+			->setDescription($this->getDescription())
 			->setOrganizer(new \Eluceo\iCal\Property\Event\Organizer($this->getOrganizer()));
 		
 		$calendar
