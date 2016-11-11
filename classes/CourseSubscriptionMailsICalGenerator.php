@@ -72,25 +72,25 @@ class CourseSubscriptionMailsICalGenerator {
 
 	public function getMailDescription() {
 		if($this->description) {
-			return html_entity_decode($this->description);
+			return $this->description;
 		}
 		return "";
 	}
 
 	public function getMailSummary() {
-		return html_entity_decode($this->nmtpl->getSubject());
+		return $this->nmtpl->getSubject();
 	}
 
 	public function getOrganizer() {
 		if($this->organizer !== "") {
-			return html_entity_decode($this->organizer);
+			return $this->organizer;
 		}
 		return "";
 	}
 
 	public function getLocation() {
 		if($this->location !== "") {
-			return html_entity_decode($this->location);
+			return $this->location;
 		}
 		return "";
 	}
@@ -232,6 +232,6 @@ class CourseSubscriptionMailsICalGenerator {
 			return "";
 		}
 
-		return htmlentities(trim($tpl->get()));
+		return trim($tpl->get());
 	}
 }
