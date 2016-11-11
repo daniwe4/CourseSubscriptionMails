@@ -44,7 +44,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		$attach_file = $settings->sendAttachment($iCal);
 		
 		$sender->setFrom($msender->getEmail());
-		$sender->CharSet("UTF-8");
+		$sender->CharSet = "UTF-8";
 		$sender->AltBody = $sender->html2text(html_entity_decode($message)); // Plain Text
 		$sender->Body = $message; // HTML Text
 		$sender->Subject = $subject;
