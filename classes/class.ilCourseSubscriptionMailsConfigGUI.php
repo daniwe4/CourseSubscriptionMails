@@ -40,7 +40,7 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 				$this->tpl->setMessage($result[0], $result[1]);
 				
 				$amd_send_mail_field = $_POST['amd_send_mail_field'];
-				$amd_send_mail_value = (int)$_POST['amd_send_mail_value'];
+				$amd_send_mail_value = $_POST['amd_send_mail_value'];
 				$amd_result = $this->cfg->saveAMDTuple($amd_send_mail_field, $amd_send_mail_value);
 				$this->tpl->setMessage($amd_result[0], $amd_result[1]);
 			case 'configure':

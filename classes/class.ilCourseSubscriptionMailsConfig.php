@@ -4,9 +4,6 @@ class ilCourseSubscriptionMailsConfig {
 	private $settings; 
 	private $sender_mail = ''; 
 	private $sender_name = ''; 
-	private $poss_placeholder = ['MAIL_SALUTION', 'FIRST_NAME', 
-								 'LAST_NAME', 'LOGIN', 'ILIAS_URL', 
-								 'CLIENT_TITLE', 'COURSE_LINK'];
 	
 	private $amd_names = array();
 	
@@ -23,7 +20,21 @@ class ilCourseSubscriptionMailsConfig {
 	}
 	
 	public function getSettings() {
-		return $this->settings;
+				/*
+		DO NOT USE ilSetting LIKE THAT.
+		IT will horribly reset global $ilSetting!
+		$settings = new ilSetting();
+		$settings->ilSetting('xcsm'); //also reads.
+		return $settings;
+		*/
+		global $ilDB;
+		$setting = array();
+		$query = "SELECT * FROM settings WHERE module='xcsm'";
+		$res = $ilDB->query($query);
+		while ($row = $ilDB->fetchAssoc($res)) {
+			$setting[$row["keyword"]] = $row["value"];
+		}
+		return $setting;
 	}
 	
 	
@@ -97,7 +108,7 @@ class ilCourseSubscriptionMailsConfig {
 	 */
 	public function readUserValues() {
 	
-		$this->sender_id = $this->settings['sender_id'];
+		$this->sender_id = $this->getSenderId();
 
 		require_once './Services/User/classes/class.ilObjUser.php';
 		$user = new ilObjUser($this->sender_id);
@@ -108,18 +119,16 @@ class ilCourseSubscriptionMailsConfig {
 	
 	public function saveAMDTuple($field, $value) {
 		assert(is_string($field) === true);
-		assert(is_int($value) === true);
+		assert(is_string($value) === true);
 
-		global $ilDB;
+		global $ilDB, $ilLog;
 		if(isset($field) && $field != "" && isset($value)) {
 			$query = "REPLACE INTO settings (module, keyword, value)"
 					."VALUES ('xcsm', 'amd_field', $field)";
 			$ilDB->manipulate($query);
 			$query = "REPLACE INTO settings (module, keyword, value)"
-					."VALUES ('xcsm', 'amd_field_value', $value)";
+					."VALUES ('xcsm', 'amd_field_value', '$value')";
 			$ilDB->manipulate($query);
-			$this->settings['amd_field'] = $field;
-			$this->settings['amd_field_value'] = $value;
 			return array('success', 'AMD Field saved.');
 		} else {
 			return array('failure', 'save error.');
@@ -134,7 +143,7 @@ class ilCourseSubscriptionMailsConfig {
 		global $ilDB;
 
 		$amd_names = array();
-		$query = "SELECT field_id, title FROM adv_mdf_definition";
+		$query = "SELECT field_id, title FROM adv_mdf_definition WHERE field_type = 1 OR field_type = 2";
 		$res = $ilDB->query($query);
 
 		while ($row = $ilDB->fetchAssoc($res)) {

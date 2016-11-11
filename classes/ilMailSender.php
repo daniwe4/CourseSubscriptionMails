@@ -29,27 +29,41 @@ class ilMailSender implements Mails\interfaces\MailSender {
 	 * @inheritdoc
 	 */
 	public function sendMail($a_template, $settings) {
-		$usr_id = $a_template->getUserId();
-		$message = $a_template->getMessage();
-		$subject = $a_template->getSubject();
+		global $ilLog;
 		
+		$usr_id = $a_template->getUserId();
+		$message = html_entity_decode($a_template->getMessage());
+		$subject = html_entity_decode($a_template->getSubject());
 		$csm_conf = new \ilCourseSubscriptionMailsConfig();
 		$mail = new \ilMail($csm_conf->getSenderId());
 		$sender = new \PHPMailer();
 		$usr = new \ilObjUser($usr_id);
+		$msender = new \ilObjUser($csm_conf->getSenderId());
 		
 		$iCal = new CourseSubscriptionMailsICalGenerator($this->crs_id, $this->usr_id, $a_template);
 		$attach_file = $settings->sendAttachment($iCal);
-
+		
+		$sender->setFrom($msender->getEmail());
 		$sender->AltBody = $sender->html2text($message); // Plain Text
 		$sender->Body = $message; // HTML Text
 		$sender->Subject = $subject;
 		if(is_array($attach_file) && !empty($attach_file)) {
 			$sender->addAttachment($attach_file[0]);
-		}
+		} 
 		$sender->addAddress($usr->getLogin());
 		$sender->addCC($usr->getEmail());
-		$mail->saveInSentbox($attach_file[0], $usr->getEmail(), "", "", "custom", $subject, $message);
-		$sender->send();
+		
+		if($mail->saveInSentbox($attach_file[0], $usr->getEmail(), "", "", "custom", $subject, $message)) {
+			$ilLog->write("Plugin.CSM.Success: Save Mail in Sendbox from " .$msender->getLogin());
+		} else {
+			$ilLog->write("Plugin.CSM.Error: Mail couldn´t be save into Sendbox from " .$msender->getLogin());
+		}
+		
+		if($sender->send()) {
+			$ilLog->write("Plugin.CSM.Success: Send Mail to " .$usr->getEmail());
+		} else {
+			$ilLog->write("Plugin.CSM.Error: Mail couldn´t be sent to " .$usr->getEmail());
+		}
+		
 	}
 }

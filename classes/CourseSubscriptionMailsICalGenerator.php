@@ -19,13 +19,11 @@ class CourseSubscriptionMailsICalGenerator {
 	public function __construct($crs_id, $usr_id, Mails\MailTemplate $nmtpl) {
 		global $tpl;
 
-		$this->cfg = new \ilCourseSubscriptionMailsConfig();
 		$this->tpl = $tpl;
 		$this->crs_id = $crs_id;
 		$this->usr_id = $usr_id;
 		$this->nmtpl = $nmtpl;
 		$this->getAMDFields();
-
 	}
 
 	public function getCourse() {
@@ -74,25 +72,25 @@ class CourseSubscriptionMailsICalGenerator {
 
 	public function getMailDescription() {
 		if($this->description) {
-			return $this->description;
+			return html_entity_decode($this->description);
 		}
 		return "";
 	}
 
 	public function getMailSummary() {
-		return $this->nmtpl->getSubject();
+		return html_entity_decode($this->nmtpl->getSubject());
 	}
 
 	public function getOrganizer() {
 		if($this->organizer !== "") {
-			return $this->organizer;
+			return html_entity_decode($this->organizer);
 		}
 		return "";
 	}
 
 	public function getLocation() {
 		if($this->location !== "") {
-			return $this->location;
+			return html_entity_decode($this->location);
 		}
 		return "";
 	}
@@ -175,7 +173,8 @@ class CourseSubscriptionMailsICalGenerator {
 
 	private function getAMDFields() {
 		$placeholders = array();
-
+		$this->cfg = new \ilCourseSubscriptionMailsConfig();
+		
 		$tpl_file = "./Customizing/global/skin/MailTemplates/tpl.csm_iCal.html";
 		$this->tpl->loadTemplateFile($tpl_file);
 
@@ -233,6 +232,6 @@ class CourseSubscriptionMailsICalGenerator {
 			return "";
 		}
 
-		return trim($tpl->get());
+		return htmlentities(trim($tpl->get()));
 	}
 }
