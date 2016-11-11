@@ -32,7 +32,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		global $ilLog;
 		
 		$usr_id = $a_template->getUserId();
-		$message = html_entity_decode($a_template->getMessage());
+		$message = $a_template->getMessage();
 		$subject = html_entity_decode($a_template->getSubject());
 		$csm_conf = new \ilCourseSubscriptionMailsConfig();
 		$mail = new \ilMail($csm_conf->getSenderId());
@@ -44,7 +44,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		$attach_file = $settings->sendAttachment($iCal);
 		
 		$sender->setFrom($msender->getEmail());
-		$sender->AltBody = $sender->html2text($message); // Plain Text
+		$sender->AltBody = $sender->html2text(html_entity_decode($message)); // Plain Text
 		$sender->Body = $message; // HTML Text
 		$sender->Subject = $subject;
 		if(is_array($attach_file) && !empty($attach_file)) {
