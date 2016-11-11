@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the eluceo/iCal package.
+ *
+ * (c) Markus Poerschke <markus@eluceo.de>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Eluceo\iCal\Property\Event;
 
 use Eluceo\iCal\Property\ValueInterface;
@@ -7,9 +16,7 @@ use Eluceo\iCal\Util\PropertyValueUtil;
 
 /**
  * Class Description
- * Alows new line charectars to be in the description
- *
- * @package Eluceo\iCal\Property
+ * Alows new line charectars to be in the description.
  */
 class Description implements ValueInterface
 {
@@ -34,7 +41,7 @@ class Description implements ValueInterface
      */
     public function getEscapedValue()
     {
-        return PropertyValueUtil::escapeValueAllowNewLine((string) $this->value);
+        return PropertyValueUtil::escapeValue((string) $this->value);
     }
 
     /**

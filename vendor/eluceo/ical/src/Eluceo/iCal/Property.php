@@ -5,8 +5,8 @@
  *
  * (c) Markus Poerschke <markus@eluceo.de>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Eluceo\iCal;
@@ -52,7 +52,7 @@ class Property
         $this->setValue($value);
         $this->parameterBag = new ParameterBag($params);
     }
-    
+
     /**
      * Renders an unfolded line.
      *
@@ -121,7 +121,7 @@ class Property
             $this->value = new ArrayValue($value);
         } else {
             if (!$value instanceof ValueInterface) {
-                throw new \Exception("The value must implement the ValueInterface.");
+                throw new \Exception('The value must implement the ValueInterface.');
             } else {
                 $this->value = $value;
             }

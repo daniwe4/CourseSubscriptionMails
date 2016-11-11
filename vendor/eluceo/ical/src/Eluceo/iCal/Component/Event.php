@@ -5,8 +5,8 @@
  *
  * (c) Markus Poerschke <markus@eluceo.de>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Eluceo\iCal\Component;
@@ -67,7 +67,7 @@ class Event extends Component
     protected $duration;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $noTime = false;
 
@@ -133,12 +133,22 @@ class Event extends Component
     /**
      * @var string
      */
+    protected $descriptionHTML;
+
+    /**
+     * @var string
+     */
     protected $status;
 
     /**
      * @var RecurrenceRule
      */
     protected $recurrenceRule;
+
+    /**
+     * @var array
+     */
+    protected $recurrenceRules = array();
 
     /**
      * This property specifies the date and time that the calendar
@@ -184,19 +194,19 @@ class Event extends Component
     protected $categories;
 
     /**
-     * https://tools.ietf.org/html/rfc5545#section-3.8.1.3
+     * https://tools.ietf.org/html/rfc5545#section-3.8.1.3.
      *
      * @var bool
      */
     protected $isPrivate = false;
-    
+
     /**
-     * Dates to be excluded from a series of events
-     * 
+     * Dates to be excluded from a series of events.
+     *
      * @var \DateTime[]
      */
     protected $exDates = array();
-    
+
     /**
      * @var RecurrenceId
      */
@@ -265,6 +275,7 @@ class Event extends Component
                         )
                     )
                 );
+                $propertyBag->set('GEO', str_replace(',', ';', $this->locationGeo));
             }
         }
 
@@ -282,15 +293,31 @@ class Event extends Component
             $propertyBag->set('DESCRIPTION', new Description($this->description));
         }
 
+        if (null != $this->descriptionHTML) {
+            $propertyBag->add(
+                new Property(
+                    'X-ALT-DESC',
+                    $this->descriptionHTML,
+                    array(
+                        'FMTTYPE' => 'text/html',
+                    )
+                )
+            );
+        }
+
         if (null != $this->recurrenceRule) {
             $propertyBag->set('RRULE', $this->recurrenceRule);
         }
-        
+
+        foreach ($this->recurrenceRules as $recurrenceRule) {
+            $propertyBag->set('RRULE', $recurrenceRule);
+        }
+
         if (null != $this->recurrenceId) {
             $this->recurrenceId->applyTimeSettings($this->noTime, $this->useTimezone, $this->useUtc);
             $propertyBag->add($this->recurrenceId);
         }
-        
+
         if (!empty($this->exDates)) {
             $propertyBag->add(new DateTimesProperty('EXDATE', $this->exDates, $this->noTime, $this->useTimezone, $this->useUtc));
         }
@@ -424,6 +451,7 @@ class Event extends Component
 
     /**
      * @param Organizer $organizer
+     *
      * @return $this
      */
     public function setOrganizer(Organizer $organizer)
@@ -546,6 +574,18 @@ class Event extends Component
     }
 
     /**
+     * @param $descriptionHTML
+     *
+     * @return $this
+     */
+    public function setDescriptionHTML($descriptionHTML)
+    {
+        $this->descriptionHTML = $descriptionHTML;
+
+        return $this;
+    }
+
+    /**
      * @param bool $useUtc
      *
      * @return $this
@@ -563,6 +603,14 @@ class Event extends Component
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescriptionHTML()
+    {
+        return $this->descriptionHTML;
     }
 
     /**
@@ -621,23 +669,51 @@ class Event extends Component
     }
 
     /**
+     * @deprecated Deprecated since version 0.11.0, to be removed in 1.0. Use addRecurrenceRule instead.
+     *
      * @param RecurrenceRule $recurrenceRule
      *
      * @return $this
      */
     public function setRecurrenceRule(RecurrenceRule $recurrenceRule)
     {
+        @trigger_error('setRecurrenceRule() is deprecated since version 0.11.0 and will be removed in 1.0. Use addRecurrenceRule instead.', E_USER_DEPRECATED);
+
         $this->recurrenceRule = $recurrenceRule;
 
         return $this;
     }
 
     /**
+     * @deprecated Deprecated since version 0.11.0, to be removed in 1.0. Use getRecurrenceRules instead.
+     *
      * @return RecurrenceRule
      */
     public function getRecurrenceRule()
     {
+        @trigger_error('getRecurrenceRule() is deprecated since version 0.11.0 and will be removed in 1.0. Use getRecurrenceRules instead.', E_USER_DEPRECATED);
+
         return $this->recurrenceRule;
+    }
+
+    /**
+     * @param RecurrenceRule $recurrenceRule
+     *
+     * @return $this
+     */
+    public function addRecurrenceRule(RecurrenceRule $recurrenceRule)
+    {
+        $this->recurrenceRules[] = $recurrenceRule;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecurrenceRules()
+    {
+        return $this->recurrenceRules;
     }
 
     /**
@@ -677,9 +753,10 @@ class Event extends Component
     }
 
     /**
-     * Sets the event privacy
+     * Sets the event privacy.
      *
      * @param bool $flag
+     *
      * @return $this
      */
     public function setIsPrivate($flag)
@@ -691,16 +768,18 @@ class Event extends Component
 
     /**
      * @param \DateTime $dateTime
+     *
      * @return \Eluceo\iCal\Component\Event
      */
     public function addExDate(\DateTime $dateTime)
     {
         $this->exDates[] = $dateTime;
+
         return $this;
     }
-    
+
     /**
-     * @return DateTime[]
+     * @return \DateTime[]
      */
     public function getExDates()
     {
@@ -709,11 +788,13 @@ class Event extends Component
 
     /**
      * @param \DateTime[]
+     *
      * @return \Eluceo\iCal\Component\Event
      */
-    public function setExDates(Array $exDates)
+    public function setExDates(array $exDates)
     {
         $this->exDates = $exDates;
+
         return $this;
     }
 
@@ -727,12 +808,13 @@ class Event extends Component
 
     /**
      * @param RecurrenceId $recurrenceId
+     *
      * @return \Eluceo\iCal\Component\Event
      */
     public function setRecurrenceId(RecurrenceId $recurrenceId)
     {
         $this->recurrenceId = $recurrenceId;
+
         return $this;
     }
- 
 }

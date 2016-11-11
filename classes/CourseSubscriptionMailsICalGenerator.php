@@ -69,7 +69,7 @@ class CourseSubscriptionMailsICalGenerator {
 
 	public function getDescription() {
 		if($this->description) {
-			return str_replace("\n", '\n', $this->description);
+			return $this->description;
 		}
 		return "";
 	}
@@ -92,7 +92,9 @@ class CourseSubscriptionMailsICalGenerator {
 		require_once(__DIR__ . "/../vendor/autoload.php");
 
 		//setup iCal
-		$calendar = new \Eluceo\iCal\Component\Calendar('makler-akademie.de');
+		// TODO: The string passed here needs to be dynamic, not every ical value
+		// is created by medicproof.de.
+		$calendar = new \Eluceo\iCal\Component\Calendar('meinelernumgebung.medicproof.de');
 
 		$tz_rule_daytime = new \Eluceo\iCal\Component\TimezoneRule(\Eluceo\iCal\Component\TimezoneRule::TYPE_DAYLIGHT);
 		$tz_rule_daytime
@@ -132,7 +134,7 @@ class CourseSubscriptionMailsICalGenerator {
 			->setLocation($this->getLocation(),"")
 			->setUseTimezone(true)
 			->setSummary($this->getCourse()->getTitle())
-			->setDescription($this->getDescription())
+			->setDescriptionHTML(str_replace("\n", "<br/>", $this->getDescription()))
 			->setOrganizer(new \Eluceo\iCal\Property\Event\Organizer($this->getOrganizer()));
 		
 		$calendar

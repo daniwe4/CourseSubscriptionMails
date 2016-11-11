@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the eluceo/iCal package.
+ *
+ * (c) Markus Poerschke <markus@eluceo.de>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Eluceo\iCal\Property\Event;
 
 use Eluceo\iCal\ParameterBag;
@@ -20,7 +29,7 @@ class RecurrenceId extends Property
      * The effective range of recurrence instances from the instance
      * specified by the recurrence identifier specified by the property.
      */
-    const RANGE_THISANDPRIOR = 'THISANDPRIOR';
+    const RANGE_THISANDPRIOR  = 'THISANDPRIOR';
     const RANGE_THISANDFUTURE = 'THISANDFUTURE';
 
     /**
@@ -112,7 +121,7 @@ class RecurrenceId extends Property
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getName()
     {
