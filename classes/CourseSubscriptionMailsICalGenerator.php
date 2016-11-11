@@ -69,7 +69,7 @@ class CourseSubscriptionMailsICalGenerator {
 
 	public function getDescription() {
 		if($this->description) {
-			return $this->description;
+			return str_replace("\n", '\n', $this->description);
 		}
 		return "";
 	}
