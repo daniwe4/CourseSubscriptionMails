@@ -35,6 +35,7 @@ class ilMailSender implements Mails\interfaces\MailSender {
 		$message = $a_template->getMessage();
 		$subject = html_entity_decode($a_template->getSubject());
 		$csm_conf = new \ilCourseSubscriptionMailsConfig();
+		$csm_conf->crs_id = $this->crs_id;
 		$mail = new \ilMail($csm_conf->getSenderId());
 		$sender = new \PHPMailer();
 		$usr = new \ilObjUser($usr_id);

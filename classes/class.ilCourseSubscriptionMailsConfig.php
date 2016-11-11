@@ -1,6 +1,12 @@
 <?php
 
 class ilCourseSubscriptionMailsConfig {
+	/**
+	 * TODO: Remove me. This is bad, but this is required in parseAMDPlaceholders.
+	 * There is no reason for parseAMDPlaceholders to be here, though.
+	 */
+	public $crs_id;
+
 	private $settings; 
 	private $sender_mail = ''; 
 	private $sender_name = ''; 
@@ -209,7 +215,7 @@ class ilCourseSubscriptionMailsConfig {
 					break;
 			}
 
-			$query = "SELECT * FROM adv_md_values_" .$table_name . " WHERE field_id = " . $match['field_id'];
+			$query = "SELECT * FROM adv_md_values_" .$table_name . " WHERE field_id = " . $match['field_id'] . " AND obj_id = " . $ilDB->quote($this->crs_id, "integer");
 			$result = $ilDB->query($query);
 			while($row = $ilDB->fetchAssoc($result)) {
 				$res_array[$match['title']] = $row['value'];

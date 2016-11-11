@@ -167,6 +167,7 @@ class CourseSubscriptionMailsICalGenerator {
 	private function getAMDFields() {
 		$placeholders = array();
 		$this->cfg = new \ilCourseSubscriptionMailsConfig();
+		$this->cfg->crs_id = $this->crs_id;
 		
 		$tpl_file = "./Customizing/global/skin/MailTemplates/tpl.csm_iCal.html";
 		$tpl = new \ilTemplate($tpl_file, true, true);
