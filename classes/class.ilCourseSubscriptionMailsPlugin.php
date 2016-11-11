@@ -73,40 +73,39 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	 * @return 	null
 	 */
 	final function handleEvent($a_component, $a_event, $a_parameter) {
+		if ($a_component == "Modules/Course") {
+			$settings = new Mails\classes\CourseSubscriptionMailsSettings($a_event);
+			if($settings->isPluginEvent() && $settings->isCSMEnabled($a_parameter["obj_id"])) {
+				global $ilLog;
 
-			if ($a_component == "Modules/Course") {
-				$settings = new Mails\classes\CourseSubscriptionMailsSettings($a_event);
-				if($settings->isPluginEvent() && $settings->isCSMEnabled($a_parameter["obj_id"])) {
-					global $ilLog;
-
-					if ($a_event == "addParticipant") {
-						$this->added_to_member_list[] = $a_parameter["usr_id"];
+				if ($a_event == "addParticipant") {
+					$this->added_to_member_list[] = $a_parameter["usr_id"];
+				}
+				else if ($a_event == "removeFromWaitingList") {
+					// Read comment for added_to_member_list.
+					if (in_array($a_parameter["usr_id"], $this->added_to_member_list)) {
+						return;
 					}
-					else if ($a_event == "removeFromWaitingList") {
-						// Read comment for added_to_member_list.
-						if (in_array($a_parameter["usr_id"], $this->added_to_member_list)) {
-							return;
-						}
-					}
+				}
 
-					$ilLog->write(
-						"Plugin.CSM.handleEvent"
-						."\nhandled event: " .print_r($a_event, true) 
-						."\n [usr_id: " .$a_parameter["usr_id"]
-						.", obj_id: " .$a_parameter["obj_id"]
-						."]"
-						." -  sender_id (cfg): " .$this->getSenderId()
-					);
+				$ilLog->write(
+					"Plugin.CSM.handleEvent"
+					."\nhandled event: " .print_r($a_event, true) 
+					."\n [usr_id: " .$a_parameter["usr_id"]
+					.", obj_id: " .$a_parameter["obj_id"]
+					."]"
+					." -  sender_id (cfg): " .$this->getSenderId()
+				);
 
-					$mail_templating = new Mails\classes\ilNaiveMailTemplating(
-						$a_event, 
-						(int)$a_parameter["usr_id"], 
-						(int)$a_parameter["obj_id"],
-						(int)$this->getSenderId()
-					);
+				$mail_templating = new Mails\classes\ilNaiveMailTemplating(
+					$a_event, 
+					(int)$a_parameter["usr_id"], 
+					(int)$a_parameter["obj_id"],
+					(int)$this->getSenderId()
+				);
 
-					$mail_sender = new Mails\classes\ilMailSender((int)$a_parameter["usr_id"], (int)$a_parameter["obj_id"]);
-					$mail_sender->sendMail($mail_templating, $settings);
+				$mail_sender = new Mails\classes\ilMailSender((int)$a_parameter["usr_id"], (int)$a_parameter["obj_id"]);
+				$mail_sender->sendMail($mail_templating, $settings);
 			}
 		}
 	}
