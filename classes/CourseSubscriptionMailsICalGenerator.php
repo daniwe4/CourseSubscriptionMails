@@ -134,7 +134,7 @@ class CourseSubscriptionMailsICalGenerator {
 			->setLocation($this->getLocation(),"")
 			->setUseTimezone(true)
 			->setSummary($this->getCourse()->getTitle())
-			->setDescriptionHTML(str_replace("\n", "<br/>", $this->getDescription()))
+			->setDescription($this->getDescription())
 			->setOrganizer(new \Eluceo\iCal\Property\Event\Organizer($this->getOrganizer()));
 		
 		$calendar
