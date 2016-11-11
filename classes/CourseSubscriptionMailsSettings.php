@@ -60,7 +60,7 @@ class CourseSubscriptionMailsSettings {
 		$placeholders = $mytpl->getBlockvariables($a_block);
 		$arr = $this->cfg->parsePlaceholders($placeholders, $a_usr, $a_crs);
 		foreach($arr as $key => $value) {
-			$mytpl->setVariable($key, $value);
+			$mytpl->setVariable($key, htmlentities($value));
 		}
 		$mytpl->setVariable("DO_NOT_DELETE", "");
 		$mytpl->parseCurrentBlock();
