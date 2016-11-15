@@ -23,21 +23,15 @@ interface MailTemplate {
 
 	
 	/**
-	 * Get the appropriate mail for the given event, where placeholders are filled
-	 * with data of user and crs.
+	 * Get the appropriate mail and/or subjectfor the given event, 
+	 * where placeholders are filled with data of user and crs.
 	 *
 	 * @throws 	\InvalidArgumentException on unknown event, user or crs.
-	 * @return	string
+	 * @param type string subject or body
+	 * @return string
 	 */
-	public function getMessage();
+	public function getMailPieces($a_which);
 	
-
-	/**
-	 * Get the appropriate mail-subject for the given event, user and course
-	 *
-	 * @return	string
-	 */
-	public function getSubject();
 
 	/**
 	 * Get the sender id from config

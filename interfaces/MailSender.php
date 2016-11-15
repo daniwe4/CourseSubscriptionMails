@@ -15,6 +15,6 @@ interface MailSender {
 	 * @param	object	$settings (instance of MailSettings)
 	 * @return 	null 
 	 */
-	public function sendMail($a_template, $settings);
+	public function sendMail($a_template);
 
 }

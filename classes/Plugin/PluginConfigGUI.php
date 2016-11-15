@@ -1,15 +1,17 @@
 <?php
+namespace CaT\Plugins\CourseSubscriptionMails\Plugin;
+
 require_once('./Services/Component/classes/class.ilPluginConfigGUI.php');
-require_once(__DIR__ . '/class.ilCourseSubscriptionMailsConfig.php');
+require_once(__DIR__ . '/PluginConfig.php');
 
 /**
- * Class ilCourseSubscriptionMailsConfigGUI
+ * Class PluginConfigGUI
  *
  * @author 	Nils Haagen <nhaagen@concepts-and-training.de>
  *
- * @ilCtrl_isCalledBy ilCourseSubscriptionMailsConfigGUI:ilRepositoryGUI, ilObjPluginDispatchGUI, ilAdministrationGUI
+ * @ilCtrl_isCalledBy PluginConfigGUI:ilRepositoryGUI, ilObjPluginDispatchGUI, ilAdministrationGUI
  */
-class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
+class PluginConfigGUI extends ilPluginConfigGUI {
 	
 	/**
 	 * Execute command
@@ -22,7 +24,7 @@ class ilCourseSubscriptionMailsConfigGUI extends ilPluginConfigGUI {
 		global $ilCtrl, $tpl;
 		$this->cmd = $ilCtrl->getCmd('configure');
 		$this->tpl = &$tpl;
-		$this->cfg = new \ilCourseSubscriptionMailsConfig();
+		$this->cfg = new \PluginConfig();
 		
 		switch ($this->cmd) {
 

@@ -1,6 +1,7 @@
 <?php
+namespace CaT\Plugins\CourseSubscriptionMails\Plugin;
 
-class ilCourseSubscriptionMailsConfig {
+class PluginConfig {
 	/**
 	 * TODO: Remove me. This is bad, but this is required in parseAMDPlaceholders.
 	 * There is no reason for parseAMDPlaceholders to be here, though.
@@ -42,8 +43,6 @@ class ilCourseSubscriptionMailsConfig {
 		}
 		return $setting;
 	}
-	
-	
 	
 	/**
 	 * Show auto complete results
@@ -173,105 +172,7 @@ class ilCourseSubscriptionMailsConfig {
 		}
 	}
 
-	public function parsePlaceholders(array $placeholders, $usr, $crs) {
-		$all_placeholders = array();
-		$all_placeholders[] = $this->parseAMDPlaceholders($placeholders);
-		$all_placeholders[] = $this->parseUserPlaceholders($placeholders, $usr);
-		$all_placeholders[] = $this->parseCoursePlaceholders($placeholders, $crs);
-		$all_placeholders[] = $this->parseInstallationPlaceholders($placeholders);
-		return call_user_func_array("array_merge", $all_placeholders);
-	}
 
-	public function parseAMDPlaceholders(array $placeholders) {
-		global $ilDB;
-		$matches = array();
-		$res_array = array();
-
-		$query = "SELECT * FROM adv_mdf_definition";
-
-		$result = $ilDB->query($query);
-		while($row = $ilDB->fetchAssoc($result)) {
-			if(in_array($row['title'], $placeholders)) {
-				$matches[$row['title']] = ["title" => $row['title'],
-										   "field_id" => $row['field_id'],
-										   "field_type" => $row['field_type']];
-			}
-		}
-
-		foreach($matches as $match) {
-			switch ($match['field_type']) {
-				case 1:
-				case 2:
-					$table_name = "text";
-					break;
-				case 3:
-					$table_name = "date";
-					break;
-				case 4:
-					$table_name = "datetime";
-				case 5:
-					$table_name = "int";
-				default:
-					break;
-			}
-
-			$query = "SELECT * FROM adv_md_values_" .$table_name . " WHERE field_id = " . $match['field_id'] . " AND obj_id = " . $ilDB->quote($this->crs_id, "integer");
-			$result = $ilDB->query($query);
-			while($row = $ilDB->fetchAssoc($result)) {
-				$res_array[$match['title']] = $row['value'];
-			}
-		}
-		return $res_array;
-	}
-
-
-	public function parseUserPlaceholders(array $placeholders, $usr) {
-		$ret_arr = array();
-		
-		foreach($placeholders as $placeholder) {
-			if($placeholder === "MAIL_SALUTATION") {
-				if($user->getGender === "w") {
-					$ret_arr["MAIL_SALUTATION"] = "Sehr geehrte Frau";
-				} else {
-					$ret_arr["MAIL_SALUTATION"] = "Sehr geehrter Herr";
-				}
-			}
-			
-			if($placeholder === "FIRST_NAME") {
-				$ret_arr["FIRST_NAME"] = $usr->getFirstname();
-			}
-			
-			if($placeholder === "LAST_NAME") {
-				$ret_arr["LAST_NAME"] = $usr->getLastname();
-			}
-			
-			if($placeholder === "LOGIN") {
-				$ret_arr["LOGIN"] = $usr->getLogin();
-			}
-		}
-		return $ret_arr;
-	}
-	
-	public function parseCoursePlaceholders(array $placeholders, $crs) {
-		$ret_arr = array();
-		
-		foreach($placeholders as $placeholder) {
-			if($placeholder === "COURSE_TITLE") {
-				$ret_arr["COURSE_TITLE"] = $crs->getTitle();
-			}
-			
-			if($placeholder === "COURSE_LINK") {
-				// TODO: add COURS_LINK
-			}
-		}
-		return $ret_arr;
-		
-		
-	}
-	
-	public function parseInstallationPlaceholders(array $placeholders) {
-		return array();
-	}
 }
 
 

@@ -9,7 +9,7 @@
 $id = "xcsm";
 
 // code version; must be changed for all code changes
-$version = "0.0.5";
+$version = "0.1.0";
 
 // ilias min and max version; must always reflect the versions that should
 // run with the plugin

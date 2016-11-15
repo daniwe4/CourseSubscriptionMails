@@ -1,17 +1,19 @@
 <?php
 
 include_once("./Services/EventHandling/classes/class.ilEventHookPlugin.php");
-require_once(__DIR__ . "/ilNaiveMailTemplating.php");
-require_once(__DIR__ . "/ilMailSender.php");
-require_once(__DIR__ . "/CourseSubscriptionMailsSettings.php");
+require_once(__DIR__ . "/mail/ilMailTemplating.php");
+require_once(__DIR__ . "/mail/ilMailSender.php");
 
 use CaT\Plugins\CourseSubscriptionMails as Mails;
+
 /**
 *  Listen on Modules/Course events
+* 
+* @author Daniel Weise
 */
 class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	
-	const PLUGIN_NAME = 'CourseSubscriptionMails';
+	const PLUGIN_NAME = 'CourseSubscriptionMailsPlugin';
 
 	/**
 	 * When a user is moved from the waiting list to the participants list,
@@ -36,18 +38,11 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	/**
 	 * get the sender's user-id from settings
 	 *
-	 * @return 	int
+	 * @return 	int the email sender id
 	 */
 	private function getSenderId() {
-		/*
-		DO NOT USE ilSetting LIKE THAT.
-		IT will horribly reset global $ilSetting!
-
-		$settings =  new ilSetting();
-		$settings->ilSetting('xcsm'); //also reads.
-		return (int)$settings->get('sender_id', 6);
-		*/
 		global $ilDB;
+
 		$setting = array();
 		$query = "SELECT * FROM settings WHERE module='xcsm'";
 		$res = $ilDB->query($query);
@@ -73,40 +68,47 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	 * @return 	null
 	 */
 	final function handleEvent($a_component, $a_event, $a_parameter) {
-		if ($a_component == "Modules/Course") {
-			$settings = new Mails\classes\CourseSubscriptionMailsSettings($a_event);
-			if($settings->isPluginEvent() && $settings->isCSMEnabled($a_parameter["obj_id"])) {
-				global $ilLog;
+		assert(is_string($a_component) === true);
+		assert(is_string($a_event) === true);
+		assert(is_array($a_parameter) === true);
 
-				if ($a_event == "addParticipant") {
-					$this->added_to_member_list[] = $a_parameter["usr_id"];
-				}
-				else if ($a_event == "removeFromWaitingList") {
-					// Read comment for added_to_member_list.
-					if (in_array($a_parameter["usr_id"], $this->added_to_member_list)) {
-						return;
-					}
-				}
-
-				$ilLog->write(
-					"Plugin.CSM.handleEvent"
-					."\nhandled event: " .print_r($a_event, true) 
-					."\n [usr_id: " .$a_parameter["usr_id"]
-					.", obj_id: " .$a_parameter["obj_id"]
-					."]"
-					." -  sender_id (cfg): " .$this->getSenderId()
-				);
-
-				$mail_templating = new Mails\classes\ilNaiveMailTemplating(
-					$a_event, 
-					(int)$a_parameter["usr_id"], 
-					(int)$a_parameter["obj_id"],
-					(int)$this->getSenderId()
-				);
-
-				$mail_sender = new Mails\classes\ilMailSender((int)$a_parameter["usr_id"], (int)$a_parameter["obj_id"]);
-				$mail_sender->sendMail($mail_templating, $settings);
-			}
+		// Not a course? Go away.
+		if (!$a_component == "Modules/Course") {
+			return;
 		}
+
+		$mail_templating = new Mails\Mail\ilMailTemplating(
+				$a_event, 
+				(int)$a_parameter["usr_id"], 
+				(int)$a_parameter["obj_id"],
+				(int)$this->getSenderId()
+			);
+
+		if($mail_templating->isPluginEvent() && $mail_templating->isCSMEnabled($a_parameter["obj_id"])) {
+			global $ilLog;
+
+			if ($a_event == "addParticipant") {
+				$this->added_to_member_list[] = $a_parameter["usr_id"];
+			}
+			else if ($a_event == "removeFromWaitingList") {
+				// Read comment for added_to_member_list.
+				if (in_array($a_parameter["usr_id"], $this->added_to_member_list)) {
+					return;
+				}
+			}
+
+			$ilLog->write(
+				"Plugin.CSM.handleEvent"
+				."\nhandled event: " .print_r($a_event, true) 
+				."\n [usr_id: " .$a_parameter["usr_id"]
+				.", obj_id: " .$a_parameter["obj_id"]
+				."]"
+				." -  sender_id (cfg): " .$this->getSenderId()
+			);
+
+			$mail_sender = new Mails\classes\ilMailSender((int)$a_parameter["usr_id"], (int)$a_parameter["obj_id"]);
+			$mail_sender->sendMail($mail_templating);
+		}
+		
 	}
 }
