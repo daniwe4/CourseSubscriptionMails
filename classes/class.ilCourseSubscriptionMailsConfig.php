@@ -5,12 +5,10 @@ class ilCourseSubscriptionMailsConfig {
 	 * TODO: Remove me. This is bad, but this is required in parseAMDPlaceholders.
 	 * There is no reason for parseAMDPlaceholders to be here, though.
 	 */
-	public $crs_id;
-
+	private $crs_id;
 	private $settings; 
 	private $sender_mail = ''; 
 	private $sender_name = ''; 
-	
 	private $amd_names = array();
 	
 	public function getSenderMail() {
@@ -46,7 +44,7 @@ class ilCourseSubscriptionMailsConfig {
 	/**
 	 * Show auto complete results
 	 */
-	public function searchUserAutoCompletion()
+	protected function searchUserAutoCompletion()
 	{
 		include_once './Services/User/classes/class.ilUserAutoComplete.php';
 		$auto = new ilUserAutoComplete();
@@ -62,42 +60,14 @@ class ilCourseSubscriptionMailsConfig {
 		echo $auto->getList($_REQUEST['term']);
 		exit();
 	}
-
-	/**
-	 * lookup user by login, write to DB if found.
-	 *
-	 * @access private
-	 * @param string $a_login
-	 *
-	 * @return array (string status, string text)
-	 * 
-	 */
-	public function saveUserAsSender($a_login) {
-		require_once './Services/User/classes/class.ilObjUser.php';
-
-		$user_id = ilObjUser::getUserIdByLogin($a_login);
-		if($user_id) {
-
-			global $ilDB;
-			$query = "REPLACE INTO settings (module, keyword, value)"
-				." VALUES ('xcsm', 'sender_id'"
-				." , " .$user_id
-				.")";
-
-			$ilDB->manipulate($query);
-			$this->settings['sender_id'] = $user_id;
-			return array('success', 'user saved.');
-		} else {
-			return array('failure', 'no such user.');
-		}
-	}
 	
+	/**
+	 * returns the deposited sender_id from table settings
+	 *
+	 * @return string
+	 */
 	public function getSenderId() {
-		global $ilDB;
-		$query = "SELECT value FROM settings WHERE keyword = 'sender_id'";
-		$result = $ilDB->query($query);
-		$ret = $ilDB->fetchAssoc($result);
-		return $ret['value'];
+		return $this->getSettings()['sender_id'];
 	}
 
 
@@ -105,8 +75,7 @@ class ilCourseSubscriptionMailsConfig {
 	 * get id from $this->settings and instantiate ilUserObj;
 	 * set sender_mail and sender_name.
 	 *
-	 * @access private
-	 * @param 
+	 * @access protected
 	 * @return 
 	 * 
 	 */
@@ -121,27 +90,35 @@ class ilCourseSubscriptionMailsConfig {
 		$this->sender_name = $user->getFullname();
 	}
 	
-	public function saveAMDTuple($field, $value) {
-		assert('is_string($field) === true');
-		assert('is_string($value) === true');
+	/**
+	 * Replace or generate a new db entry in table 'settings'
+	 * 
+	 * @param string $field 
+	 * @param string $value 
+	 * 
+	 * @return array
+	 */
+	public function saveAMDTuple($a_field, $a_value) {
+		assert('is_string($a_field) === true');
 
-		global $ilDB, $ilLog;
-		if(isset($field) && $field != "" && isset($value)) {
+		global $ilDB;
+
+		if(isset($a_field) && $a_field != "" && isset($a_value)) {
 			$query = "REPLACE INTO settings (module, keyword, value)"
-					."VALUES ('xcsm', 'amd_field', $field)";
+					."VALUES ('xcsm', '" .$a_field ."', '" . $a_value ."')";
 			$ilDB->manipulate($query);
-			$query = "REPLACE INTO settings (module, keyword, value)"
-					."VALUES ('xcsm', 'amd_field_value', '$value')";
-			$ilDB->manipulate($query);
-			return array('success', 'AMD Field saved.');
 		} else {
-			return array('failure', 'save error.');
-		}
+			global $ilLog;
+
+			$ilLog->write("Plugin.CSM.Error: Write to table settings failed\nGiven VALUES:\n$a_field\$a_value");
+		} 
 	}
 
 	/**
+	 * Get all difined amd fields
 	 * 
-	 * @global type $ilDB
+	 * @global $ilDB
+	 * @return array
 	 */
 	public function readAMDNames() {
 		global $ilDB;
@@ -153,27 +130,8 @@ class ilCourseSubscriptionMailsConfig {
 		while ($row = $ilDB->fetchAssoc($res)) {
 			$amd_names[$row['field_id']] = $row['title'];
 		}
-
 		$this->amd_names = $amd_names;
-
-		/*
-		$query = "SELECT value FROM settings WHERE keyword = 'amd_field'";
-		$res = $ilDB->query($query);
-		$row = $ilDB->fetchAssoc($res);
-		if($row) {
-			$this->amd_field = $row['value'];
-		}
-
-		$query = "SELECT value FROM settings WHERE keyword = 'amd_field_value'";
-		$res = $ilDB->query($query);
-		$row = $ilDB->fetchAssoc($res);
-		if($row) {
-			$this->amd_field_value = $row['value'];
-		}
-		*/
 	}
-
-
 }
 
 

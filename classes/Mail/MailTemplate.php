@@ -21,4 +21,10 @@ interface MailTemplate {
 	 */
 	public function getSenderId();
 
+	/**
+	 * Return a course object
+	 * @return object
+	 */
+	public function getCourse();
+
 }

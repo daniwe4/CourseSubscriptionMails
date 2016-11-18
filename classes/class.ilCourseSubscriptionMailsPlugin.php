@@ -4,8 +4,8 @@ include_once(__DIR__ . "/../../../../../../../../Services/EventHandling/classes/
 require_once(__DIR__ . "/Mail/ilMailTemplating.php");
 require_once(__DIR__ . "/Mail/ilMailSender.php");
 require_once(__DIR__ . "/Mail/ilMailer.php");
-require_once(__DIR__ . "/Mail/ICalGenerator.php");
-require_once(__DIR__ . "/Mail/ICalGenerator_Null.php");
+require_once(__DIR__ . "/Mail/EluceoICalGenerator.php");
+require_once(__DIR__ . "/Mail/NullEluceoICalGenerator.php");
 
 use CaT\Plugins\CourseSubscriptionMails\Mail;
 
@@ -84,7 +84,14 @@ class ilCourseSubscriptionMailsPlugin extends \ilEventHookPlugin {
 			$from = new \ilObjUser($mail_templating->getSenderId());
 			$mail_from = new Mail\ilMailer($from);
 			$mail_recipient = new Mail\ilMailer($usr);
-			$iCal = new Mail\ICalGenerator_Null($mail_templating);
+
+			if($a_event == "addParticipant") {
+				// to dis/enable iCal switch the comments in the next 2 lines
+				$iCal = new Mail\EluceoICalGenerator($mail_templating);
+				//$iCal = new Mail\NullEluceoICalGenerator();
+			} else {
+				$iCal = $iCal = new Mail\NullEluceoICalGenerator();
+			}
 
 			$mail_sender = new Mail\ilMailSender();
 			$mail_sender->sendMail($iCal, $mail_templating, $mail_recipient, $mail_from);

@@ -12,6 +12,6 @@ interface MailSender {
 	 * @param Mailer $a_sender
 	 * @return null
 	 */
-	public function sendMail(MailICalGenerator $a_iCal, MailTemplate $a_template, Mailer $a_recipient, Mailer $a_sender);
+	public function sendMail(ICalGenerator $a_iCal, MailTemplate $a_template, Mailer $a_recipient, Mailer $a_sender);
 
 }

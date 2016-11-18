@@ -3,6 +3,7 @@
 require_once(__DIR__ . "/../../../../../../../../Services/Component/classes/class.ilPluginConfigGUI.php");
 require_once(__DIR__ . "/class.ilCourseSubscriptionMailsConfig.php");
 
+
 /**
  * Class PluginConfigGUI
  *
@@ -36,14 +37,31 @@ class ilCourseSubscriptionMailsConfigGUI extends \ilPluginConfigGUI {
 				break;
 
 			case 'save':
-				$sender_login = trim($_POST['sender_login']);
-				$result = $this->cfg->saveUserAsSender($sender_login);
-				$this->tpl->setMessage($result[0], $result[1]);
-				
-				$amd_send_mail_field = (string)$_POST['amd_send_mail_field'];
-				$amd_send_mail_value = (string)$_POST['amd_send_mail_value'];
-				$amd_result = $this->cfg->saveAMDTuple($amd_send_mail_field, $amd_send_mail_value);
-				$this->tpl->setMessage($amd_result[0], $amd_result[1]);
+				$sender_login 			= trim($_POST['sender_login']);
+				$amd_send_mail_field 	= (string)$_POST['amd_send_mail_field'];
+				$amd_send_mail_value 	= (string)$_POST['amd_send_mail_value'];
+
+				if($sender_login !== "") {
+					require_once("./Services/User/classes/class.ilObjUser.php");
+					$user_id = ilObjUser::getUserIdByLogin($sender_login);					
+					if(!$user_id) {
+						ilUtil::sendFailure("Benutzer nicht bekannt");
+					} else {
+						$this->cfg->saveAMDTuple("sender_id", $user_id);
+						ilUtil::sendSuccess("Absender gespeichert");
+					}
+				}
+
+				if($amd_send_mail_field !== "") {
+					$this->cfg->saveAMDTuple("amd_field", $amd_send_mail_field);
+					ilUtil::sendInfo("AMD update");
+				}
+
+				if ($amd_send_mail_value !== "") {
+					$this->cfg->saveAMDTuple("amd_field_value", $amd_send_mail_value);
+					ilUtil::sendInfo("AMD update");
+				}
+
 			case 'configure':
 			default:
 				$this->init_gui();
@@ -51,8 +69,6 @@ class ilCourseSubscriptionMailsConfigGUI extends \ilPluginConfigGUI {
 				$this->cfg->readAMDNames();
 				$this->render_form();
 		}
-
-		//$this->performCommand($ilCtrl->getCmd("configure"));
 	}
 
 

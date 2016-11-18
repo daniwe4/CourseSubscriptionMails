@@ -17,7 +17,7 @@ class ilMailSender implements MailSender {
 	/**
 	 * @inheritdoc
 	 */
-	public function sendMail(MailICalGenerator $a_iCal, MailTemplate $a_template, Mailer $a_recipient, Mailer $mail_from) {
+	public function sendMail(ICalGenerator $a_iCal, MailTemplate $a_template, Mailer $a_recipient, Mailer $mail_from) {
 		global $ilLog;
 
 		$php_mailer 		= $this->buildPHPMail();
