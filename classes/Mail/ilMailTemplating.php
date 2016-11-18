@@ -1,30 +1,61 @@
 <?php
 namespace CaT\Plugins\CourseSubscriptionMails\Mail;
 
-require_once(__DIR__ . "/../../interfaces/MailTemplate.php");
-require_once("./Modules/Course/classes/class.ilObjCourse.php");
-
-use CaT\Plugins\CourseSubscriptionMails as Mails;
+require_once(__DIR__ . "/MailTemplate.php");
+require_once(__DIR__ . "/../../../../../../../../../Modules/Course/classes/class.ilObjCourse.php");
 
 
 
-class ilMailTemplating implements Mails\interfaces\MailTemplate {
+class ilMailTemplating implements MailTemplate {
+	/**
+	 * @var string
+	 */
 	private $event_name;
-	private $usr_id;
-	private $crs_id;
+
+	/**
+	 * @var object
+	 */
+	private $usr;
+
+	/**
+	 * @var object
+	 */
+	private $crs;
+
+	/**
+	 * @var int
+	 */
 	private $sender_id;
 
+	/**
+	 * @var int
+	 */
+	private $usr_id;
 	
-	public function __construct($a_event_name, $a_usr_id, $a_crs_id, $a_sender_id) {
-		assert(is_string($a_event_name) === true);
-		assert(is_int($a_usr_id) === true);
-		assert(is_int($a_crs_id) === true);
-		assert(is_int($a_sender_id) === true);
+	/**
+	 * @var int
+	 */
+	private $crs_id;
+
+	
+	/**
+	 * Init ilMailTemplating
+	 * 
+	 * @param string $a_event_name 
+	 * @param int $a_usr_id 
+	 * @param int $a_crs_id 
+	 * @return null
+	 */
+	public function __construct($a_event_name, $a_usr_id, $a_crs_id) {
+		assert('is_string($a_event_name) === true');
+		assert('is_int($a_usr_id) === true');
+		assert('is_int($a_crs_id) === true');
 
 		$this->setEventName($a_event_name);
-		$this->setUserId($a_usr_id);
-		$this->setCourseId($a_crs_id);
-		$this->setSenderId($a_sender_id);
+		$this->setUser(new \ilObjUser($a_usr_id));
+		$this->setCourse(new \ilObjCourse($a_crs_id, false));
+		$this->usr_id = $a_usr_id;
+		$this->crs_id = $a_crs_id;
 	}
 
 	/**
@@ -35,7 +66,7 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 *
 	 */
 	public function setEventName($a_event_name) {
-		assert(is_string($a_event_name));
+		assert('is_string($a_event_name)');
 
 		$this->event_name = $a_event_name;
 	}
@@ -57,10 +88,10 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @return 	null 
 	 *
 	 */
-	public function setUserId($a_usr_id) {
-		assert(is_int($a_usr_id) && $a_usr_id >= 0);
+	public function setUser($a_usr) {
+		assert('is_object($a_usr) ===true');
 
-		$this->usr_id = $a_usr_id;
+		$this->usr = $a_usr;
 	}
 
 	/**
@@ -69,8 +100,8 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @return 	int 	
 	 *
 	 */
-	public function getUserId() {
-		return $this->usr_id;
+	public function getUser() {
+		return $this->usr;
 	}
 
 	/**
@@ -80,10 +111,10 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @return 	null 
 	 *
 	 */
-	public function setCourseId($a_crs_id) {
-		assert(is_int($a_crs_id) && $a_crs_id > 0);
+	public function setCourse($a_crs) {
+		assert('is_object($a_crs) === true');
 
-		$this->crs_id = $a_crs_id;
+		$this->crs = $a_crs;
 	}
 
 	/**
@@ -92,10 +123,27 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @return 	int 	
 	 *
 	 */
-	public function getCourseId() {
-		return $this->crs_id;
+	public function getCourse() {
+		return $this->crs;
 	}
 
+	/**
+	 * get current user id
+	 * 
+	 * @return int
+	 */
+	public function getUsrId() {
+		return $this->usr_id;
+	}
+
+	/**
+		 * get current course id
+		 * 
+		 * @return int
+		 */	
+	public function getCrsId() {
+		return $this->crs_id();
+	}
 	
 	/**
 	 * set sender id
@@ -105,7 +153,8 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 *
 	 */
 	private function setSenderId($a_id) {
-		assert(is_int($a_id) && $a_id > 0);
+		assert('is_int($a_id) === true');
+		assert('$a_id > 0');
 
 		$this->sender_id = $a_id;
 	}
@@ -117,7 +166,30 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 *
 	 */
 	public function getSenderId() {
-		return $this->sender_id;
+		return $this->getUserValuesFromDb()['sender_id'];
+	}
+
+	/**
+	 * get the user values from settings table
+	 *
+	 * @return 	array user values
+	 */
+	private function getUserValuesFromDb() {
+		global $ilDB;
+
+		$setting = array();
+		$query = "SELECT * FROM settings WHERE module='xcsm'";
+		$res = $ilDB->query($query);
+
+		while ($row = $ilDB->fetchAssoc($res)) {
+			$setting[$row["keyword"]] = $row["value"];
+		}
+		
+		if(! $setting['sender_id']) {
+			$setting['sender_id'] = 6;
+		}
+
+		return $setting;
 	}
 
 	/**
@@ -147,19 +219,12 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 		}
 	}
 
-	public function sendAttachment(ICalGenerator $iCalGen) {
-		// return $iCalGen->buildICal();
-		return null;
-	}
-
 	/**
 	 * Checks, wether the CSM-plugin is enabled
 	 * 
-	 * @param type int $crs_id 
 	 * @return type boolean $enabled true/enabled false/disabled
 	 */
-	public function isCSMEnabled($crs_id) {
-		assert(is_int($crs_id) === true);
+	public function isCSMEnabled() {
 
 		global $ilDB;
 		$enabled = false;
@@ -175,9 +240,10 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 			$plugin_settings[$row['keyword']] = $row['value'];
 		}
 		
+		$a_crs_id = $this->getCourse()->getId();
 		$query = "SELECT value "
 				."FROM adv_md_values_text "
-				."WHERE field_id = " . $plugin_settings['amd_field'] . " AND obj_id = '" . $crs_id . "';";
+				."WHERE field_id = " . $plugin_settings['amd_field'] . " AND obj_id = '" . $this->getCourse()->getId() . "';";
 
 		$result  = $ilDB->query($query);
 		$value = $ilDB->fetchAssoc($result)['value'];
@@ -194,25 +260,18 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 * Returns a user, course and event specifig piece
 	 * from a template file
 	 * 
-	 * @param object $a_usr 
-	 * @param object $a_crs 
-	 * @param string $a_event select file by envent
 	 * @param string $a_block parese only this block in file 
+	 * 
 	 * @return type string
 	 */
-	public function getMailHtml($a_usr, $a_crs, $a_event, $a_block) {
-		assert(is_object($a_usr) === true);
-		assert(is_object($a_crs) === true);
-		assert(is_string($a_event) === true);
-		assert(is_string($a_block) === true);
-
-		$skin_path = "./Customizing/global/skin/MailTemplates/";
+	public function getMailHtml($a_block) {
+		assert('is_string($a_block) === true');
 		
-		$mail_tpl = new \ilTemplate($skin_path . "tpl.csm_" . $a_event .".html", TRUE, TRUE);
+		$mail_tpl = new \ilTemplate("tpl.csm_" . $this->getEventName() .".html", TRUE, TRUE, "Customizing/global/plugins/Services/EventHandling/EventHook/CourseSubscriptionMails");
 		$mail_tpl->setCurrentBlock($a_block);
 		$placeholders = $mail_tpl->getBlockvariables($a_block);
 		
-		$arr = $this->parsePlaceholders($placeholders, $a_usr, $a_crs);
+		$arr = $this->parsePlaceholders($placeholders, $this->getUser(), $this->getCourse());
 
 		foreach($arr as $key => $value) {
 			$mail_tpl->setVariable($key, htmlentities($value));
@@ -230,27 +289,11 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @inheritdoc
 	 */
 	public function getMailPieces($a_which) {
-		assert(is_string($a_which) === true);
-		assert($a_which === "BODY" || $a_which == "SUBJECT");
-		
-		$usr = new \ilObjUser($this->getUserId());
-		$crs = new \ilObjCourse($this->getCourseId(), false);
+		assert('is_string($a_which)');
+		assert('$a_which === "BODY" || $a_which == "SUBJECT"');
 
-		switch ($this->getEventName()) {
-			case 'addParticipant':
-				return $this->getMailHtml($usr, $crs, "addParticipant", $a_which);
-
-			case 'addToWaitingList':
-				return $this->getMailHtml($usr, $crs, "addToWaitingList", $a_which);
-
-			case 'deleteParticipant':
-				return $this->getMailHtml($usr, $crs, "deleteParticipant", $a_which);
-
-			case 'removeFromWaitingList':
-				return $this->getMailHtml($usr, $crs, "removeFromWaitingList", $a_which);
-
-			case 'remindDueCourse':
-				return $this->getMailHtml($usr, $crs, "remindDueCourse", $a_which);
+		if($this->isPluginEvent()) {
+			return $this->getMailHtml($a_which);
 		}
 		throw \InvalidArgumentException();
 	}
@@ -259,19 +302,16 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 * Delegates parsePlaceholder() calls, and merged all results
 	 * 
 	 * @param array $placeholders 
-	 * @param object $usr 
-	 * @param object $crs 
+	 * 
 	 * @return array a merge of all method calls
 	 */
-	public function parsePlaceholders(array $placeholders, $usr, $crs) {
+	public function parsePlaceholders(array $placeholders) {
 		assert(is_array($placeholders) === true);
-		assert(is_object($usr) === true);
-		assert(is_object($crs) === true);
 
 		$all_placeholders = array();
 		$all_placeholders[] = $this->parseAMDPlaceholders($placeholders);
-		$all_placeholders[] = $this->parseUserPlaceholders($placeholders, $usr);
-		$all_placeholders[] = $this->parseCoursePlaceholders($placeholders, $crs);
+		$all_placeholders[] = $this->parseUserPlaceholders($placeholders);
+		$all_placeholders[] = $this->parseCoursePlaceholders($placeholders);
 		$all_placeholders[] = $this->parseInstallationPlaceholders($placeholders);
 		
 		return call_user_func_array("array_merge", $all_placeholders);
@@ -314,7 +354,7 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 
 			$query = "SELECT * "
 					."FROM adv_md_values_" .$table_name 
-					." WHERE field_id = " . $match['field_id'] . " AND obj_id = " . $ilDB->quote($this->crs_id, "integer");
+					." WHERE field_id = " . $match['field_id'] . " AND obj_id = " . $ilDB->quote($this->getCourse()->getId(), "integer");
 
 			$result = $ilDB->query($query);
 			while($row = $ilDB->fetchAssoc($result)) {
@@ -327,19 +367,18 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	/**
 	 * Replaces all placeholders with userdata
 	 * 
-	 * @param array $placeholders 
-	 * @param object $usr 
+	 * @param array $placeholders
+	 * 
 	 * @return array
 	 */
-	private function parseUserPlaceholders(array $placeholders, $usr) {
-		asser(is_array($placeholders) === true);
-		assert(is_object($usr) === true);
+	private function parseUserPlaceholders(array $placeholders) {
 
+		$a_usr = $this->getUser();
 		$ret_arr = array();
 		
 		foreach($placeholders as $placeholder) {
 			if($placeholder === "MAIL_SALUTATION") {
-				if($user->getGender === "w") {
+				if($a_usr->getGender() === "w") {
 					$ret_arr["MAIL_SALUTATION"] = "Sehr geehrte Frau";
 				} else {
 					$ret_arr["MAIL_SALUTATION"] = "Sehr geehrter Herr";
@@ -347,36 +386,35 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 			}
 			
 			if($placeholder === "FIRST_NAME") {
-				$ret_arr["FIRST_NAME"] = $usr->getFirstname();
+				$ret_arr["FIRST_NAME"] = $a_usr->getFirstname();
 			}
 			
 			if($placeholder === "LAST_NAME") {
-				$ret_arr["LAST_NAME"] = $usr->getLastname();
+				$ret_arr["LAST_NAME"] = $a_usr->getLastname();
 			}
 			
 			if($placeholder === "LOGIN") {
-				$ret_arr["LOGIN"] = $usr->getLogin();
+				$ret_arr["LOGIN"] = $a_usr->getLogin();
 			}
 		}
 		return $ret_arr;
 	}
 	
 	/**
-	 * Replaces all placeholders with coursedata
+	 * Replace all placeholders with course data
 	 * 
-	 * @param array $placeholders 
-	 * @param object $crs
+	 * @param array $placeholders
+	 * 
 	 * @return array
 	 */
-	private function parseCoursePlaceholders(array $placeholders, $crs) {
-		asser(is_array($placeholders) === true);
-		assert(is_object($crs) === true);
+	private function parseCoursePlaceholders(array $placeholders) {
 
+		$a_crs = $this->getCourse();
 		$ret_arr = array();
 		
 		foreach($placeholders as $placeholder) {
 			if($placeholder === "COURSE_TITLE") {
-				$ret_arr["COURSE_TITLE"] = $crs->getTitle();
+				$ret_arr["COURSE_TITLE"] = $a_crs->getTitle();
 			}
 			
 			if($placeholder === "COURSE_LINK") {
@@ -395,7 +433,7 @@ class ilMailTemplating implements Mails\interfaces\MailTemplate {
 	 * @return array
 	 */
 	private function parseInstallationPlaceholders(array $placeholders) {
-		asser(is_array($placeholders) === true);
+		assert(is_array($placeholders) === true);
 
 		return array();
 	}

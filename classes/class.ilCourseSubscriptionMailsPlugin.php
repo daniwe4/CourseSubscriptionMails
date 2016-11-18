@@ -1,19 +1,22 @@
 <?php
 
-include_once("./Services/EventHandling/classes/class.ilEventHookPlugin.php");
-require_once(__DIR__ . "/mail/ilMailTemplating.php");
-require_once(__DIR__ . "/mail/ilMailSender.php");
+include_once(__DIR__ . "/../../../../../../../../Services/EventHandling/classes/class.ilEventHookPlugin.php");
+require_once(__DIR__ . "/Mail/ilMailTemplating.php");
+require_once(__DIR__ . "/Mail/ilMailSender.php");
+require_once(__DIR__ . "/Mail/ilMailer.php");
+require_once(__DIR__ . "/Mail/ICalGenerator.php");
+require_once(__DIR__ . "/Mail/ICalGenerator_Null.php");
 
-use CaT\Plugins\CourseSubscriptionMails as Mails;
+use CaT\Plugins\CourseSubscriptionMails\Mail;
 
 /**
 *  Listen on Modules/Course events
 * 
 * @author Daniel Weise
 */
-class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
+class ilCourseSubscriptionMailsPlugin extends \ilEventHookPlugin {
 	
-	const PLUGIN_NAME = 'CourseSubscriptionMailsPlugin';
+	const PLUGIN_NAME = 'CourseSubscriptionMails';
 
 	/**
 	 * When a user is moved from the waiting list to the participants list,
@@ -36,29 +39,6 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 
 
 	/**
-	 * get the sender's user-id from settings
-	 *
-	 * @return 	int the email sender id
-	 */
-	private function getSenderId() {
-		global $ilDB;
-
-		$setting = array();
-		$query = "SELECT * FROM settings WHERE module='xcsm'";
-		$res = $ilDB->query($query);
-
-		while ($row = $ilDB->fetchAssoc($res)) {
-			$setting[$row["keyword"]] = $row["value"];
-		}
-		
-		if(! $setting['sender_id']) {
-			$setting['sender_id'] = 6;
-		}
-		return $setting['sender_id'];
-	}
-
-
-	/**
 	 * Handle Modules/Course events
 	 *
 	 * @param 	string 	$a_component
@@ -68,23 +48,18 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 	 * @return 	null
 	 */
 	final function handleEvent($a_component, $a_event, $a_parameter) {
-		assert(is_string($a_component) === true);
-		assert(is_string($a_event) === true);
-		assert(is_array($a_parameter) === true);
+		assert('is_string($a_component) === true');
+		assert('is_string($a_event) === true');
+		assert('is_array($a_parameter) === true');
 
 		// Not a course? Go away.
-		if (!$a_component == "Modules/Course") {
+		if ($a_component !== "Modules/Course") {
 			return;
 		}
 
-		$mail_templating = new Mails\Mail\ilMailTemplating(
-				$a_event, 
-				(int)$a_parameter["usr_id"], 
-				(int)$a_parameter["obj_id"],
-				(int)$this->getSenderId()
-			);
+		$mail_templating = new Mail\ilMailTemplating($a_event, (int)$a_parameter["usr_id"], (int)$a_parameter["obj_id"]);
 
-		if($mail_templating->isPluginEvent() && $mail_templating->isCSMEnabled($a_parameter["obj_id"])) {
+		if($mail_templating->isPluginEvent() && $mail_templating->isCSMEnabled()) {
 			global $ilLog;
 
 			if ($a_event == "addParticipant") {
@@ -103,11 +78,16 @@ class ilCourseSubscriptionMailsPlugin extends ilEventHookPlugin {
 				."\n [usr_id: " .$a_parameter["usr_id"]
 				.", obj_id: " .$a_parameter["obj_id"]
 				."]"
-				." -  sender_id (cfg): " .$this->getSenderId()
 			);
 
-			$mail_sender = new Mails\classes\ilMailSender((int)$a_parameter["usr_id"], (int)$a_parameter["obj_id"]);
-			$mail_sender->sendMail($mail_templating);
+			$usr = new \ilObjUser((int)$a_parameter["usr_id"]);
+			$from = new \ilObjUser($mail_templating->getSenderId());
+			$mail_from = new Mail\ilMailer($from);
+			$mail_recipient = new Mail\ilMailer($usr);
+			$iCal = new Mail\ICalGenerator_Null($mail_templating);
+
+			$mail_sender = new Mail\ilMailSender();
+			$mail_sender->sendMail($iCal, $mail_templating, $mail_recipient, $mail_from);
 		}
 		
 	}

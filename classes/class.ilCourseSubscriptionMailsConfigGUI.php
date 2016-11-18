@@ -1,8 +1,7 @@
 <?php
-namespace CaT\Plugins\CourseSubscriptionMails\Plugin;
 
-require_once('./Services/Component/classes/class.ilPluginConfigGUI.php');
-require_once(__DIR__ . '/PluginConfig.php');
+require_once(__DIR__ . "/../../../../../../../../Services/Component/classes/class.ilPluginConfigGUI.php");
+require_once(__DIR__ . "/class.ilCourseSubscriptionMailsConfig.php");
 
 /**
  * Class PluginConfigGUI
@@ -11,7 +10,7 @@ require_once(__DIR__ . '/PluginConfig.php');
  *
  * @ilCtrl_isCalledBy PluginConfigGUI:ilRepositoryGUI, ilObjPluginDispatchGUI, ilAdministrationGUI
  */
-class PluginConfigGUI extends ilPluginConfigGUI {
+class ilCourseSubscriptionMailsConfigGUI extends \ilPluginConfigGUI {
 	
 	/**
 	 * Execute command
@@ -24,7 +23,7 @@ class PluginConfigGUI extends ilPluginConfigGUI {
 		global $ilCtrl, $tpl;
 		$this->cmd = $ilCtrl->getCmd('configure');
 		$this->tpl = &$tpl;
-		$this->cfg = new \PluginConfig();
+		$this->cfg = new \ilCourseSubscriptionMailsConfig();
 		
 		switch ($this->cmd) {
 
@@ -37,12 +36,12 @@ class PluginConfigGUI extends ilPluginConfigGUI {
 				break;
 
 			case 'save':
-				$sender_login = $_POST['sender_login'];
+				$sender_login = trim($_POST['sender_login']);
 				$result = $this->cfg->saveUserAsSender($sender_login);
 				$this->tpl->setMessage($result[0], $result[1]);
 				
-				$amd_send_mail_field = $_POST['amd_send_mail_field'];
-				$amd_send_mail_value = $_POST['amd_send_mail_value'];
+				$amd_send_mail_field = (string)$_POST['amd_send_mail_field'];
+				$amd_send_mail_value = (string)$_POST['amd_send_mail_value'];
 				$amd_result = $this->cfg->saveAMDTuple($amd_send_mail_field, $amd_send_mail_value);
 				$this->tpl->setMessage($amd_result[0], $amd_result[1]);
 			case 'configure':

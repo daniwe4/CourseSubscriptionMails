@@ -1,7 +1,6 @@
 <?php
-namespace CaT\Plugins\CourseSubscriptionMails\Plugin;
 
-class PluginConfig {
+class ilCourseSubscriptionMailsConfig {
 	/**
 	 * TODO: Remove me. This is bad, but this is required in parseAMDPlaceholders.
 	 * There is no reason for parseAMDPlaceholders to be here, though.
@@ -123,8 +122,8 @@ class PluginConfig {
 	}
 	
 	public function saveAMDTuple($field, $value) {
-		assert(is_string($field) === true);
-		assert(is_string($value) === true);
+		assert('is_string($field) === true');
+		assert('is_string($value) === true');
 
 		global $ilDB, $ilLog;
 		if(isset($field) && $field != "" && isset($value)) {
@@ -157,6 +156,7 @@ class PluginConfig {
 
 		$this->amd_names = $amd_names;
 
+		/*
 		$query = "SELECT value FROM settings WHERE keyword = 'amd_field'";
 		$res = $ilDB->query($query);
 		$row = $ilDB->fetchAssoc($res);
@@ -170,6 +170,7 @@ class PluginConfig {
 		if($row) {
 			$this->amd_field_value = $row['value'];
 		}
+		*/
 	}
 
 
