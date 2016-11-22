@@ -264,7 +264,7 @@ class ilMailTemplating implements MailTemplate {
 	 * 
 	 * @return type string
 	 */
-	public function getMailHtml($a_block) {
+	private function getMailHtml($a_block) {
 		assert('is_string($a_block) === true');
 		
 		$mail_tpl = new \ilTemplate("tpl.csm_" . $this->getEventName() .".html", TRUE, TRUE, "Customizing/global/plugins/Services/EventHandling/EventHook/CourseSubscriptionMails");

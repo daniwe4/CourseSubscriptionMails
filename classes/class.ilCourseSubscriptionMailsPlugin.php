@@ -74,7 +74,7 @@ class ilCourseSubscriptionMailsPlugin extends \ilEventHookPlugin {
 
 			$ilLog->write(
 				"Plugin.CSM.handleEvent"
-				."\nhandled event: " .print_r($a_event, true) 
+				."\nhandled event: " .print_r($a_event, true)
 				."\n [usr_id: " .$a_parameter["usr_id"]
 				.", obj_id: " .$a_parameter["obj_id"]
 				."]"
@@ -87,10 +87,10 @@ class ilCourseSubscriptionMailsPlugin extends \ilEventHookPlugin {
 
 			if($a_event == "addParticipant") {
 				// to dis/enable iCal switch the comments in the next 2 lines
+				//$iCal = new Mail\EluceoICalGenerator($mail_templating);
 				$iCal = new Mail\EluceoICalGenerator($mail_templating);
-				//$iCal = new Mail\NullEluceoICalGenerator();
 			} else {
-				$iCal = $iCal = new Mail\NullEluceoICalGenerator();
+				$iCal = new Mail\NullEluceoICalGenerator();
 			}
 
 			$mail_sender = new Mail\ilMailSender();

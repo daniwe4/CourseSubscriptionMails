@@ -13,7 +13,6 @@ interface MailTemplate {
 	 */
 	public function getMailPieces($a_which);
 	
-
 	/**
 	 * Get the sender id from the amd config
 	 *

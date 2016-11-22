@@ -7,6 +7,7 @@ require_once(__DIR__ . "/../../../../../../../../../Services/Mail/phpmailer/clas
 require_once(__DIR__ . "/../../../../../../../../../Modules/Course/classes/class.ilObjCourse.php");
 
 
+
 /**
  * Generates an email attachment file in iCal format
  * 
@@ -39,18 +40,80 @@ class EluceoICalGenerator implements ICalGenerator {
 	 */
 	private $organizer;
 
+	private $tplFile;
+	private $tplPath;
+
 	public function __construct(MailTemplate $a_nmtpl) {
 		
 		$this->crs = $a_nmtpl->getCourse();
 		$this->nmtpl = $a_nmtpl;
-		$this->replacePlaceholders();
+
+		$this->tplFile = "tpl.csm_iCal.html";
+		$this->tplPath = "Customizing/global/plugins/Services/EventHandling/EventHook/CourseSubscriptionMails/";
+
+		$this->replacePlaceholders($this->tpl);
 	}
 
+	/**
+	 * set standard template or if set via setTplPath()
+	 * and setTplFile() the specified template file
+	 *
+	 * @param string $a_file
+	 * @param string $a_path
+	 * @return object ilTemplate
+	 */
+	protected function getTpl($a_file, $a_path) {
+		require_once("./Services/UICore/classes/class.ilTemplateHTMLITX.php");
+		require_once("./Services/UICore/classes/class.ilTemplate.php");
+
+		list($file, $path) = $this->getFileAndPath($a_file, $a_path);
+
+		return new \ilTemplate($file, false, true, $path);
+	}
+
+	/**
+	 * get the standard template path if one param is empty
+	 * @param string $a_file
+	 * @param string $a_path
+	 * @return array
+	 */
+	protected function getFileAndPath($a_file, $a_path) {
+		assert('is_string($a_file)');
+		assert('is_string($a_path)');
+
+		if(empty($a_file) || empty($a_path)) {
+			return ['tpl.csm_iCal.html', 'Customizing/global/plugins/Services/EventHandling/EventHook/CourseSubscriptionMails'];
+		} else {
+			return [$a_file, $a_path];
+		}
+
+	}
+
+	/**
+	 * set the path to template file
+	 * @param string $value
+	 */
+	public function setTplPath($value) {
+		assert('is_string($value');
+
+		$this->tplPath = $value;
+	}
+
+	/**
+	 * set the template file name
+	 * should be a html file
+	 * @param  string $value
+	 */
+	public function setTplFile($value) {
+		assert('is_string($value)');
+
+		$this->tplFile = $value;
+	}
 
 
 	/**
 	 * Returns a description for the mail
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getDescription() {
@@ -107,7 +170,7 @@ class EluceoICalGenerator implements ICalGenerator {
 		if($this->getCourse()->getCourseStart() != null) {
 			return $this->getCourse()->getCourseStart()->get(IL_CAL_DATE);
 		}
-		return "1999-01-01";
+		return "";
 	}
 
 	/**
@@ -240,44 +303,36 @@ class EluceoICalGenerator implements ICalGenerator {
 	 * @return null
 	 */
 	private function replacePlaceholders() {
-		require_once("./Services/UICore/classes/class.ilTemplateHTMLITX.php");
-		require_once("./Services/UICore/classes/class.ilTemplate.php");
 		$placeholders = array();
 
-		$tpl_file = "tpl.csm_iCal.html";
-		$tpl = new \ilTemplate($tpl_file, true, true, "Customizing/global/plugins/Services/EventHandling/EventHook/CourseSubscriptionMails/");
-		$placeholders = $tpl->getBlockvariables("DTStart");
+		$a_tpl = $this->getTpl($this->tplFile, $this->tplPath);
+		$placeholders = $a_tpl->getBlockvariables("DTStart");
 		$this->dt_start = $this->buildIcalBlock
 							( "DTStart"
-							, $tpl_file
 							, $this->nmtpl->parsePlaceholders($placeholders)
 							);
 
-		$placeholders = $tpl->getBlockvariables("DTEnd");
+		$placeholders = $a_tpl->getBlockvariables("DTEnd");
 		$this->dt_end = $this->buildIcalBlock
 							( "DTEnd"
-							, $tpl_file
 							, $this->nmtpl->parsePlaceholders($placeholders)
 							);
 
-		$placeholders = $tpl->getBlockvariables("Location");
+		$placeholders = $a_tpl->getBlockvariables("Location");
 		$this->location = $this->buildIcalBlock
 							( "Location"
-							, $tpl_file
 							, $this->nmtpl->parsePlaceholders($placeholders)
 							);
 
-		$placeholders = $tpl->getBlockvariables("Description");
+		$placeholders = $a_tpl->getBlockvariables("Description");
 		$this->description = $this->buildIcalBlock
 							( "Description"
-							, $tpl_file
 							, $this->nmtpl->parsePlaceholders($placeholders)
 							);
 
-		$placeholders = $tpl->getBlockvariables("Organizer");
+		$placeholders = $a_tpl->getBlockvariables("Organizer");
 		$this->organizer = $this->buildIcalBlock
 							( "Organizer"
-							, $tpl_file
 							, $this->nmtpl->parsePlaceholders($placeholders)
 							);
 	}
@@ -290,26 +345,25 @@ class EluceoICalGenerator implements ICalGenerator {
 	 * @param array $vars placeholder variables
 	 * @return string the hole block content with replaced placeholders
 	 */
-	public function buildIcalBlock($which, $tpl_file, $vars) {
+	public function buildIcalBlock($which, $vars) {
 		assert('is_string($which)');
-		assert('is_string($tpl_file)');
 		assert('is_array($vars)');
 
-		if(!empty($which) && !empty($tpl_file) && is_array($vars) && !empty($vars)) {
-			$tpl = new \ilTemplate($tpl_file, true, true, "Customizing/global/plugins/Services/EventHandling/EventHook/CourseSubscriptionMails/");
-			$tpl->setCurrentBlock($which);
+		if(!empty($which) && is_array($vars)) {
+			//$tpl = new \ilTemplate($tpl_file, true, true, "Customizing/global/plugins/Services/EventHandling/EventHook/CourseSubscriptionMails/");
+			$tpl_file = $this->getTpl($this->tplFile, $this->tplPath);
+			$tpl_file->setCurrentBlock($which);
 			foreach ($vars as $key => $value) {
-				$tpl->setVariable($key, $value);
+				$tpl_file->setVariable($key, $value);
 			}
-			$tpl->setVariable("DO_NOT_DELETE", "");
+			$tpl_file->setVariable("DO_NOT_DELETE", "");
 
-			$tpl->parseCurrentBlock();
+			$tpl_file->parseCurrentBlock();
 		} else {
 			global $ilLog;
 			$ilLog->write("Error on building iCal for CSM: " . $e);
 			return "";
 		}
-
-		return trim($tpl->get());
+		return trim($tpl_file->get());
 	}
 }

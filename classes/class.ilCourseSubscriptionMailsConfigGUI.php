@@ -164,7 +164,7 @@ class ilCourseSubscriptionMailsConfigGUI extends \ilPluginConfigGUI {
 		$sh_amd = new ilFormSectionHeaderGUI();
 		$sh_amd->setTitle("AMD Mails versenden?");
 
-		$label = 'Name des AMD-Felds ob Mails gesendet werden';
+		$label = 'Zu prüfendes AMD-Feld<br>(Text/Auswahlliste)';
 		$user_send_mail_field = new ilSelectInputGUI($label, "amd_send_mail_field");
 		$user_send_mail_field->setOptions($this->cfg->getAMDNames());
 		$user_send_mail_field->setValue($this->cfg->getSettings()['amd_field']);

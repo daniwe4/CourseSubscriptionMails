@@ -11,7 +11,7 @@ class NullEluceoICalGenerator implements ICalGenerator {
 	 * @return array
 	 */
 	public function buildICal() {
-		return array();
+		return null;
 	}
 }
 

@@ -50,7 +50,7 @@ class ilMailSender implements MailSender {
 		}
 		
 		// Setup mail to push in sentbox from sender
-		$this->saveInSendBox($a_template, $attach_file[0], $sender_mail, $subject, $plain_text);
+		$this->saveInSendBox($a_template, $attach_file, $sender_mail, $subject, $plain_text);
 	}
 
 
@@ -67,7 +67,7 @@ class ilMailSender implements MailSender {
 	}
 
 	public function buildMail($a_template) {
-		return new \ilMail($a_template->getUsrId());
+		return new \ilMail($a_template->getSenderId());
 	}
 
 	public function buildPHPMail() {

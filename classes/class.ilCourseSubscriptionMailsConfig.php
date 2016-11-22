@@ -24,13 +24,6 @@ class ilCourseSubscriptionMailsConfig {
 	}
 	
 	public function getSettings() {
-				/*
-		DO NOT USE ilSetting LIKE THAT.
-		IT will horribly reset global $ilSetting!
-		$settings = new ilSetting();
-		$settings->ilSetting('xcsm'); //also reads.
-		return $settings;
-		*/
 		global $ilDB;
 		$setting = array();
 		$query = "SELECT * FROM settings WHERE module='xcsm'";
@@ -44,7 +37,7 @@ class ilCourseSubscriptionMailsConfig {
 	/**
 	 * Show auto complete results
 	 */
-	protected function searchUserAutoCompletion()
+	public function searchUserAutoCompletion()
 	{
 		include_once './Services/User/classes/class.ilUserAutoComplete.php';
 		$auto = new ilUserAutoComplete();
