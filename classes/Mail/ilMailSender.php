@@ -54,7 +54,7 @@ class ilMailSender implements MailSender {
 	}
 
 
-	public function saveInSendBox($a_template, $a_attach_file, $a_sender_mail, $a_subject, $a_plain_text) {
+	protected function saveInSendBox($a_template, $a_attach_file, $a_sender_mail, $a_subject, $a_plain_text) {
 		global $ilLog;
 		$mail = $this->buildMail($a_template);
 		if($mail->saveInSentbox($a_attach_file, $a_sender_mail, "", "", "custom", $a_subject, $a_plain_text)) {
@@ -66,11 +66,11 @@ class ilMailSender implements MailSender {
 		}
 	}
 
-	public function buildMail($a_template) {
+	protected function buildMail($a_template) {
 		return new \ilMail($a_template->getSenderId());
 	}
 
-	public function buildPHPMail() {
+	protected function buildPHPMail() {
 		return new \PHPMailer();
 	}
 }
